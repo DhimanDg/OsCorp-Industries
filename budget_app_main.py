@@ -1,4 +1,4 @@
-from bud_class import BudApp
+from bud_app_class import BudApp
 
 # Dashboard Prototype (will delete later)
 def Dashboard():
