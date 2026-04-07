@@ -1,62 +1,314 @@
 class BudApp:
-    def __init__(self, iniBud , balance , transaction , spent):
+    def __init__(self, iniBud , balance):
         self.iniBud = iniBud
         self.balance = balance
-        self.transaction = transaction
-        self.spent = spent
+        self.transaction = 0.0
+        self.spent = 0.0
+        self.BudLimit = 0.0
+        self.BudLim_Check = False
+        self.CatLim_Check = {'U': False,
+                             'C': False,
+                             'T': False,
+                             'M': False,
+                             'S': False,
+                             'F': False}
+        self.categories = {'U': 'Utilities',
+                           'C': 'Credit',
+                           'T': 'Travel',
+                           'M': 'Medical',
+                           'S': 'Shopping',
+                           'F': 'Fun'}
+        self.category_limits = {'U': 0.0,
+                                'C': 0.0,
+                                'T': 0.0,
+                                'M': 0.0,
+                                'S': 0.0,
+                                'F': 0.0}
+        self.category_spent = {'U': 0.0,
+                               'C': 0.0,
+                               'T': 0.0,
+                               'M': 0.0,
+                               'S': 0.0,
+                               'F': 0.0}
+        self.tra_spent = [] # Stores amount spent
+        self.tra_desc = [] # Stores transaction description
+        self.cat_letter = [] # Stores the chosen category's letter & allows the self.category_spent dict to be mutable
+        self.tra_category = [] # Stores category chosen 
+        self.tra_overview = [] #Stores data from tra_spent, tra_desc, & tra_category
 
-    def Init_Bal(self):
+    # Initial Budget - Shows the user's initial budget
+    def Init_Bud(self):
         print(f'\nYour initial budget was ${abs(self.iniBud):,.2f}.')
 
+    # Change Budget - Changes user's budget & updates the balance variable
+    def Change_Bud(self):
+        valid_input = False
+        while not valid_input:
+            print('\nDo you want to change the budget? Enter (y/n): ', end='')
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice == 'N':
+                print('\nBudget unchanged')
+                return
+            elif usr_choice == 'Y':
+                valid_input = True
+
+        change_input = False
+        while not change_input:
+            try:
+                print("\nEnter your new budget: ", end="$")
+                new_bud = float(input())
+                if new_bud <= 0:
+                    print("Invalid budget value. Please try again.\n")
+                elif new_bud > 0:
+                    change_input = True
+                    self.iniBud = new_bud
+                    self.balance = new_bud
+                    print(f'Budget changed to ${self.iniBud:,.2f}')
+                    for s in range(len(self.tra_spent)):
+                        self.balance -= self.tra_spent[s]
+            except(ValueError):
+                print("The value you entered is invalid. Please try again.\n")
+
+
+    # Balance Left - Shows how much the user has left in their budget.
+    #                Also, checks to see if user is overbudget
     def Balance_left(self):
+        bal_pct = (self.balance/self.iniBud) * 100
         if self.balance >= 0:
-            print(f'\nYou have ${abs(self.balance):,.2f} left in your budget.')
-
+            print(f'\nYou have ${abs(self.balance):,.2f} ({bal_pct:.0f}%) left in your budget.')
         else:
-            print(f'\nYou are ${abs(self.balance):,.2f} overbudget.')
+            print(f'\nYou are ${abs(self.balance):,.2f} ({bal_pct:.0f}%) overbudget.')
 
-# New Transaction - Allows user to enter the category they spent money on,
-#                   a description of what they spent on, & how much it cost.
-#
-# Updates the total balance and spent variables in bud_class                  
+    # Amount Spent - Shows how much the user has spent in total    
+    def Spent(self):
+        spt_percent = (self.spent/self.iniBud) * 100
+        if self.spent < 0:
+            print(f'\nYou spent -${abs(self.spent):,.2f} ({spt_percent:.0f}%) in total')
+        else:
+            print(f'\nYou spent ${self.spent:,.2f} ({spt_percent:.0f}%) in total')
 
-    def Transaction(self):
+    # Budget Limit - Limits how much can be spent on a budget
+    def Bud_Limit(self):
+        if self.BudLim_Check == True:
+            print(f'\nBudget limit already set: ${self.BudLimit:,.2f}')
+            return
+        
+        valid_input = False
+        while not valid_input:
+            print('\nDo you want to set a budget limit? Enter (y/n): ', end='')
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice == 'N':
+                print('\nBudget limit not set')
+                return
+            elif usr_choice == 'Y':
+                self.BudLim_Check = True
+                valid_input = True
+
+        valid_limit = False
+        while not valid_limit:
+            print('Set the limit for your budget: $', end='')
+            try:
+                usr_limit = float(input())
+                if usr_limit <= 0:
+                        print("\nInvalid budget value. Try again")
+                elif usr_limit > 0:
+                    valid_limit = True
+                    self.BudLimit = usr_limit
+                    print(f'\nBudget limit of ${self.BudLimit:,.2f} has been set.')
+            except(ValueError):
+                print('\nThe value you entered is invalid. Try again')
+
+    # Remove Budget Limit - Removes Budget Limit
+    def RemoveBudLim(self):
+        self.BudLim_Check = False
+        for i in self.CatLim_Check:
+            self.CatLim_Check[i] = False
+        self.BudLimit = 0.0
+        for i in self.category_limits:
+            self.category_limits[i] = 0.0
+        print('\nBudget & category limits removed')
+    
+    # Category Limit - Limits how much can be spent per category
+    def Cat_Limit(self):
+        if self.BudLim_Check == False:
+            print("\nCan't set a spending limit without a budget limit.")
+            return
+        
+        valid_input = False
+        while not valid_input:
+            print('\nDo you want to set a spending limit? Enter (y/n): ', end='')
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice == 'N':
+                print('\n Spending limit not set')
+                return
+            elif usr_choice == 'Y':
+                valid_input = True
+
+        valid_cat = False
+        while not valid_cat:
+            print('\n Which category limit do you want to set?')
+            print('-'*42)
+            print(' Utilities (U)     Credit (C)    Travel (T)')
+            print('   Medical (M)   Shopping (S)       Fun (F)')
+            print('Enter a category: ', end='')
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice in self.categories:
+                valid_cat = True
+                self.CatLim_Check[usr_choice] = True
+            else:
+                    print('\nInvalid category. Please try again')
+
+        valid_percent = False
+        while not valid_percent:
+            try:
+                print(f'Out of ${self.BudLimit:,.2f}, what percentage do you want to spend on {self.categories[usr_choice]}: ', end='')
+                usr_pct = int(input())
+                if usr_pct <= 0:
+                    print('\nInvalid percentage. Please enter a number greater than 0 ')
+                else:
+                    valid_percent = True
+                    percent = (self.BudLimit * (usr_pct / 100))
+                    self.category_limits[usr_choice] = percent
+                    print(f'\n{self.categories[usr_choice]} limit of ${self.category_limits[usr_choice]:,.2f} has been set.')
+            except (ValueError):
+                print('\nThe value you entered is invalid. Please enter a whole number')
+
+    def RemoveCatLim(self):
+        print('\nWhich category limit do you want to remove?')
+        print('-'*43)
+        print(' Utilities (U)     Credit (C)    Travel (T)')
+        print('   Medical (M)   Shopping (S)       Fun (F)')
+        print('Enter a category: ', end='')
+        valid_input = False
+        while not valid_input:
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice in self.categories:
+                valid_input = True
+                self.category_limits[usr_choice] = 0.0
+                self.CatLim_Check[usr_choice] = False
+                print(f'\n{self.categories[usr_choice]} limit has been removed.')
+            else:
+                print('Incorrect Choice.  Enter again:', end=' ')
+
+    # New Transaction - Allows user to enter the amount spent on an item.
+    #                   Updates the total balance and spent variables in bud_class.   
+    #                   Allows the user to enter a description on their transaction.
+    #                   Checks to see if there is a budget or category limit.
+    def Transaction(self, category):
+        category = self.Category()
         valid_input = False
         while not valid_input:
             try:
-                print("\nEnter the cost of the item: ", end='$')
+                print("\nEnter new transaction: ", end='$')
                 usr_tra = float(input())
 
-                if usr_tra <= 0:
-                    print("Invalid value. Please try again.\n")
-                elif usr_tra > 0:
+                if usr_tra < 0: #Negative transactions
+                        valid_input = True
+                        self.transaction = usr_tra
+                        self.tra_spent.append(self.transaction)
+                        self.category_spent[category] += usr_tra
+                else:
+                    if round(self.spent + usr_tra, 2) > round(self.BudLimit, 2) and self.BudLim_Check: #Check to see if transaction exceeds budget limit, if there is one
+                        print(f'You cannot exceed your budget limit of ${self.BudLimit:,.2f}')
+                        return
+                    if self.CatLim_Check[category] and round(self.category_spent[category] + usr_tra, 2) > round(self.category_limits[category], 2):
+                        print(f'You cannot exceed your {self.categories[category]} limit of ${self.category_limits[category]:,.2f}')
+                        return
                     valid_input = True
                     self.transaction = usr_tra
+                    self.tra_spent.append(self.transaction)
+                    self.category_spent[category] += usr_tra
             except(ValueError):
                 print("The value you entered is invalid. Please try again.\n")
+
+        print('Do you want to have a description of the transaction (y/n): ', end='')
+        valid_input = False
+        while not valid_input:
+                usr_choice = str(input())
+                usr_choice = usr_choice.upper()
+                if usr_choice == 'Y':
+                    valid_input = True
+                    print("Enter description below:\n")
+                    usr_input = str(input())
+                    self.tra_desc.append(usr_input)
+                elif usr_choice == 'N':
+                    valid_input = True
+                    self.tra_desc.append(None)
+                else:
+                    print('Incorrect Choice.  Enter again (y/n):', end=' ')
+
         self.balance -= self.transaction
         self.spent += self.transaction
-        
-        ''' #Unfinished Category
-    print('\n      What category you spent on')
-    print('-'*38)
-    print(f'Utilities (U)  Credit (C)   Travel (T)')
-    print(f'Medical (M)  Shopping (S)      Fun (F)')
-    print(f'                Other (O)')
-    print('Enter a category: ', end='')
-    valid_input = False
-    while not valid_input:
-        usr_choice = input()
+        self.Gen_Tra()
 
-        if usr_choice in ['C','T','M','S','F','O',
-                          'c','t','m','s','f','o']:
-            valid_input = True
-            return str(usr_choice)
+    # Generate Transaction - Generates user's transactions
+    def Gen_Tra(self):
+        self.tra_overview = [] # resets list to prevent duplicates
+        for c, s, d in zip(self.tra_category, self.tra_spent, self.tra_desc): #pairs category, spent, and description together
+            self.tra_overview.append((c, s, d))
+
+    # Past Transactions - Shows the user's previous transactions
+    def Past_Tra(self):
+        if (not bool(self.tra_overview)): #Checks if the overview is empty
+            print('\nYou have no past transactions.')
         else:
-            print('Incorrect Choice.  Enter again:', end=' ')
-        '''
+            for i, (category, spent, description) in enumerate(self.tra_overview, 1): #incrementing for-loop for tra_desc() that starts at 1
+                if spent < 0:
+                    print(f'\n({i}.) {category}: -${abs(spent):,.2f}\n') 
+                    print(f'Description: {description}')
+                else:
+                    print(f'\n({i}.) {category}: ${spent:,.2f}\n') #Format (Number.) Category: $Spent
+                    print(f'Description: {description}') #Description: description of transaction
 
-# Amount Spent - Shows how much the user has spent in total    
+    # Remove Transaction - Removes chosen transaction
+    def Remove_tra(self):
+        self.Past_Tra() #Will be removed. Only here to see all transactions
+        if (not bool (self.tra_overview)):
+            print('Operation canceled')
+        else: 
+            print('\nEnter the transaction you want to remove: ', end='')
+            valid_input = False
 
-    def Spent(self):
-        print(f'\nYou spent ${self.spent:,.2f} in total')
+            while not valid_input:
+                usr_choice = int(input()) - 1
+                if usr_choice in range(len(self.tra_overview)):
+                    valid_input = True
+                    
+                    amount = self.tra_spent[usr_choice]
+                    category = self.cat_letter[usr_choice]
+
+                    if category in self.category_spent: #Updates the chosen category spent
+                        self.category_spent[category] -= amount
+
+                    # Updates balance and spent
+                    self.balance += amount
+                    self.spent -= amount
+
+                    # Removes the chosen index
+                    del self.tra_overview[usr_choice], self.tra_spent[usr_choice], self.tra_category[usr_choice], self.tra_desc[usr_choice]
+                else:
+                    print('Error: Input not in range. Try again: ', end='')
+
+    # Category - Allows the user to enter the category they spent on
+    def Category(self):
+        print('\n              Categories    ')
+        print('-'*38)
+        print('Utilities (U)   Credit (C)  Travel (T)')
+        print('  Medical (M) Shopping (S)     Fun (F)')
+        print('Enter a category: ', end='')
+        valid_input = False
+        while not valid_input:
+            usr_choice = str(input())
+            usr_choice = usr_choice.upper()
+            if usr_choice in self.categories:
+                valid_input = True
+                self.tra_category.append(self.categories[usr_choice])
+                self.cat_letter.append(usr_choice) #Allows the self.category_spent dict to be mutable
+                return usr_choice
+            else:
+                print('Incorrect Choice.  Enter again:', end=' ')
