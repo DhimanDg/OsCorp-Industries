@@ -1,7 +1,11 @@
+from datetime import datetime
+
 class BudApp:
     def __init__(self, iniBud , balance):
         self.iniBud = iniBud
         self.balance = balance
+        self.usr_bills = []
+        self.bill_due = []
         self.transaction = 0.0
         self.spent = 0.0
         self.BudLimit = 0.0
@@ -36,6 +40,96 @@ class BudApp:
         self.tra_category = [] # Stores category chosen 
         self.tra_overview = [] #Stores data from tra_spent, tra_desc, & tra_category
 
+    ########## These three functions require the database code to be written ##########
+    # Add New Budget - Adds new budget
+    def Add_New_Budget(self):
+        pass
+
+    # Remove Budget - Removes chosen budget
+    def Remove_Budget(self):
+        pass
+
+    # Switch Budget - Allows the user to switch between multiple budgets if there is more than 1 budget
+    def Switch_Budget(self):
+        pass
+    ###################################################################################
+
+    # Set Bill - Sets the value of a bill and the date it's due
+    def Set_Bill(self):
+        valid_input = False
+        formats = ["%Y-%m-%d", "%m-%d-%Y", "%Y/%m/%d", "%m/%d/%Y",]
+        while not valid_input:
+            try:
+                print("\nEnter the bill amount: ", end='$')
+                usr_bill = float(input())
+
+                if usr_bill <= 0:
+                    print("Invalid bill value. Enter a number greater than 0.\n")
+
+                elif usr_bill > 0:
+                    valid_input = True
+                    self.usr_bills.append(usr_bill)
+        
+            except(ValueError):
+                print("The value you entered is invalid. Please try again.\n")
+
+        valid_date = False
+        while not valid_date:
+            print("Enter the bill's due date (YYYY-MM-DD or MM/DD/YYYY): ", end='')
+            date = input()
+            
+            for f in formats:
+                try:
+                    parsed_date = (datetime.strptime(date, f))
+                    self.bill_due.append(parsed_date)
+                    valid_date = True
+                    break
+                except(ValueError):
+                    continue
+
+            if not valid_date:
+                print('The date you entered is invalid. Please try again.\n')
+        print(f'\nBill of: ${usr_bill:,.2f} and date: {date} has been set.')
+
+    # Bills Due - Shows bills that will be due soon
+    def Bills_Due(self):
+        if (not bool (self.bill_due)):
+            print('\nYou have no bills due. Operation canceled.')
+            return
+        
+        now = datetime.now().date() #ignores time
+
+        for i, (due, bill) in enumerate(zip(self.bill_due, self.usr_bills), start=1): #combines self.bill_due and self.usr_bills together and starts at 1
+            due_date = due.date() #strips time from due date
+            difference = due_date - now
+
+
+            if difference.days > 0:
+                print(f'\nBill #{i}: ${bill:,.2f} is due in {difference.days:,} day(s)!')
+            elif difference.days == 0:
+                print(f'\nBill #{i}: ${bill:,.2f} is due today!')
+            else:
+                print(f'\nBill #{i}: ${bill:,.2f} is overdue by {abs(difference.days):,} day(s)!')
+
+    # Remove Bill - Removes chosen bill
+    def Remove_Bill(self):
+        self.Bills_Due() #Will be removed. Only here to see all bills
+        if (not bool (self.usr_bills)):
+            print('\nYou have no bills. Operation canceled.')
+            return
+        
+        print('\nEnter the bill you want to remove: ', end='')
+        valid_input = False
+        
+        while not valid_input:
+            usr_choice = int(input()) - 1
+            if usr_choice in range(len(self.bill_due)):
+                valid_input = True
+                del self.bill_due[usr_choice], self.usr_bills[usr_choice]
+                print('Bill has been removed.')
+                pass
+            else:
+                print('Error: Input not in range. Try again: ', end='')
     # Initial Budget - Shows the user's initial budget
     def Init_Bud(self):
         print(f'\nYour initial budget was ${abs(self.iniBud):,.2f}.')

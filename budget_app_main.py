@@ -18,13 +18,16 @@ def Dashboard():
     print(' 12. Remove Spending Limit')
     print(' 13. Set Budget Limit')
     print(' 14. Remove Budget Limit')
-    print(' 15. Exit App')
+    print(' 15. Set Bill')
+    print(' 16. Show Upcoming Bills')
+    print(' 17. Remove Bill')
+    print(' 18. Exit App')
     print('Enter your choice: ', end='')
     valid_input = False
     while not valid_input:
         usr_choice = input()
 
-        if usr_choice in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']:
+        if usr_choice in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']:
             valid_input = True
             return int(usr_choice)
         else:
@@ -77,11 +80,11 @@ def main():
             case 6:
                 bud.Init_Bud()
             case 7:
-                pass
+                bud.Add_New_Budget()
             case 8:
-                pass
+                bud.Remove_Budget()
             case 9:
-                pass
+                bud.Switch_Budget()
             case 10:
                 bud.Change_Bud()
             case 11:
@@ -93,6 +96,12 @@ def main():
             case 14:
                 bud.RemoveBudLim()
             case 15:
+                bud.Set_Bill()
+            case 16:
+                bud.Bills_Due()
+            case 17:
+                bud.Remove_Bill()
+            case 18:
                 quit_program = True
                 print('\nGoodbye!')
                 exit()
