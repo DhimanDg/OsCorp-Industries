@@ -36,6 +36,7 @@ class BudApp:
                                'F': 0.0}
         self.tra_spent = [] # Stores amount spent
         self.tra_desc = [] # Stores transaction description
+        self.tra_date = [] # Stores the date of transaction
         self.cat_letter = [] # Stores the chosen category's letter & allows the self.category_spent dict to be mutable
         self.tra_category = [] # Stores category chosen 
         self.tra_overview = [] #Stores data from tra_spent, tra_desc, & tra_category
@@ -294,6 +295,7 @@ class BudApp:
     #                   Allows the user to enter a description on their transaction.
     #                   Checks to see if there is a budget or category limit.
     def Transaction(self, category):
+        formats = ["%Y-%m-%d", "%m-%d-%Y", "%Y/%m/%d", "%m/%d/%Y",]
         category = self.Category()
         valid_input = False
         while not valid_input:
@@ -320,6 +322,22 @@ class BudApp:
             except(ValueError):
                 print("The value you entered is invalid. Please try again.\n")
 
+        while not valid_date:
+            print("Enter the date of transaction (YYYY-MM-DD or MM/DD/YYYY): ", end='')
+            date = input()
+
+            for f in formats:
+                try:
+                    parsed_date = (datetime.strptime(date, f))
+                    self.tra_date.append(parsed_date)
+                    valid_date = True
+                    break
+                except(ValueError):
+                    continue
+
+            if not valid_date:
+                print('The date you entered is invalid. Please try again.\n')
+
         print('Do you want to have a description of the transaction (y/n): ', end='')
         valid_input = False
         while not valid_input:
@@ -343,21 +361,23 @@ class BudApp:
     # Generate Transaction - Generates user's transactions
     def Gen_Tra(self):
         self.tra_overview = [] # resets list to prevent duplicates
-        for c, s, d in zip(self.tra_category, self.tra_spent, self.tra_desc): #pairs category, spent, and description together
-            self.tra_overview.append((c, s, d))
+        for c, s, d, t in zip(self.tra_category, self.tra_spent, self.tra_desc, self.tra_date): #pairs category, spent, description, and date together
+            self.tra_overview.append((c, s, d, t))
 
     # Past Transactions - Shows the user's previous transactions
     def Past_Tra(self):
         if (not bool(self.tra_overview)): #Checks if the overview is empty
             print('\nYou have no past transactions.')
         else:
-            for i, (category, spent, description) in enumerate(self.tra_overview, 1): #incrementing for-loop for tra_desc() that starts at 1
+            for i, (category, spent, description, date) in enumerate(self.tra_overview, 1): #incrementing for-loop for tra_desc() that starts at 1
                 if spent < 0:
                     print(f'\n({i}.) {category}: -${abs(spent):,.2f}\n') 
                     print(f'Description: {description}')
+                    print(f'Date of Transaction: {date.date()}')
                 else:
-                    print(f'\n({i}.) {category}: ${spent:,.2f}\n') #Format (Number.) Category: $Spent
-                    print(f'Description: {description}') #Description: description of transaction
+                    print(f'\n({i}.) {category}: ${spent:,.2f}\n') #Format: (Index+1.) (Chosen Category): $(amount spent)
+                    print(f'Description: {description}') #                  Description: (description user entered)
+                    print(f'Date of Transaction: {date.date()}')#           Date of Transaction: (date user entered)
 
     # Remove Transaction - Removes chosen transaction
     def Remove_tra(self):
@@ -384,7 +404,7 @@ class BudApp:
                     self.spent -= amount
 
                     # Removes the chosen index
-                    del self.tra_overview[usr_choice], self.tra_spent[usr_choice], self.tra_category[usr_choice], self.tra_desc[usr_choice]
+                    del self.tra_overview[usr_choice], self.tra_spent[usr_choice], self.tra_category[usr_choice], self.tra_desc[usr_choice], self.tra_date[usr_choice]
                 else:
                     print('Error: Input not in range. Try again: ', end='')
 
