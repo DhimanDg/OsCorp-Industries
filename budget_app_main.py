@@ -11,7 +11,7 @@ from kivy.uix.button import Button
 
 
 class DashboardScreen(BoxLayout):
-    balance_text = StringProperty("$0.00")
+    balance_text = StringProperty("$0.00")  
     spent_text = StringProperty("$0.00")
     initial_text = StringProperty("Click to set")
 

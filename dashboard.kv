@@ -29,7 +29,7 @@
             TextInput:
                 hint_text: "Search..."
                 size_hint_x: 0.4
-                multiline: False
+                multiline: True #(This must be set to true for a better view)
 
         GridLayout:
             cols: 3
@@ -76,7 +76,7 @@
 
                 canvas.before:
                     Color:
-                        rgba: (1,1,1,1)
+                        rgba: (1,1,1,1) 
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -141,6 +141,7 @@
 
     Label:
         text: root.title
+        bold: False
         color: (0,0,0,1)
         font_size: "14sp"
 

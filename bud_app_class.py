@@ -6,7 +6,7 @@ class BudApp:
         self.spent = spent
 
     def Init_Bal(self):
-        print(f'\nYour initial budget was ${abs(self.iniBud):,.2f}.')
+        print(f'\nYour initial budget was ${abs(self.iniBud):,.2f}.')#(This logic should be in the backend!!!)
 
     def Balance_left(self):
         if self.balance >= 0:
@@ -20,7 +20,7 @@ class BudApp:
 #
 # Updates the total balance and spent variables in bud_class                  
 
-    def Transaction(self):
+    def Transaction(self): #Should belong to backend
         valid_input = False
         while not valid_input:
             try:
@@ -36,8 +36,8 @@ class BudApp:
                 print("The value you entered is invalid. Please try again.\n")
         self.balance -= self.transaction
         self.spent += self.transaction
-        
-        ''' #Unfinished Category
+        #Should belong to backend
+        ''' #Unfinished Category 
     print('\n      What category you spent on')
     print('-'*38)
     print(f'Utilities (U)  Credit (C)   Travel (T)')
