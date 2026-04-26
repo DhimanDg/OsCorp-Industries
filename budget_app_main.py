@@ -1,96 +1,112 @@
 from bud_app_class import BudApp
 
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import StringProperty
-from kivy.lang import Builder
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
+# Dashboard Prototype (will delete later)
+def Dashboard():
+    print('\nDashboard')
+    print('-'*9)
+    print(' 1. New Transaction')
+    print(' 2. Show Balance left')
+    print(' 3. Show Amount Spent')
+    print(' 4. Show Past Transactions')
+    print(' 5. Remove Transaction')
+    print(' 6. Show Initial Budget')
+    print(' 7. Add New Budget (Unfinished)')
+    print(' 8. Remove Budget (Unfinished)')
+    print(' 9. Switch Budget (Unfinished)')
+    print(' 10. Change Current Budget')
+    print(' 11. Set Spending Limit for Category')
+    print(' 12. Remove Spending Limit')
+    print(' 13. Set Budget Limit')
+    print(' 14. Remove Budget Limit')
+    print(' 15. Set Bill')
+    print(' 16. Show Upcoming Bills')
+    print(' 17. Remove Bill')
+    print(' 18. Exit App')
+    print('Enter your choice: ', end='')
+    valid_input = False
+    while not valid_input:
+        usr_choice = input()
+
+        if usr_choice in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']:
+            valid_input = True
+            return int(usr_choice)
+        else:
+            print('Incorrect Choice.  Enter again:', end=' ')
 
 
-class DashboardScreen(BoxLayout):
-    balance_text = StringProperty("$0.00")
-    spent_text = StringProperty("$0.00")
-    initial_text = StringProperty("Click to set")
+# The Main function
+def main():
+    greeting = 'Welcome to Green Goblin!'
+    tagline = 'An app for all your budgeting needs'
+    bud = BudApp(0.0, 0.0) #Sets variables in BudApp as floats
+    
+    print(f"{greeting:^35}")
+    print(f"{tagline}")
+    print('*'*35)
+    valid_input = False
 
-    def __init__(self, bud, **kwargs):
-        super().__init__(**kwargs)
-        self.bud = bud
-        self.update_labels()
+    #Set the user's initial budget
+    while not valid_input:
+        try:
+            print("Enter your budget: ", end="$")
+            usr_bal = float(input())
 
-    def update_labels(self):
-        self.balance_text = f"${self.bud.balance:,.2f}"
-        self.spent_text = f"${self.bud.spent:,.2f}"
-        self.initial_text = (
-            f"${self.bud.iniBud:,.2f}" if self.bud.iniBud > 0 else "Click to set"
-        )
+            if usr_bal <= 0:
+                print("Invalid budget value. Please try again.\n")
+            elif usr_bal > 0:
+                valid_input = True
+                bud.iniBud = usr_bal
+                bud.balance += usr_bal
+        
+        except(ValueError):
+            print("The value you entered is invalid. Please try again.\n")
 
-    def open_budget_popup(self):
-        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+    #Transitions to Dashboard
+    quit_program = False
+    while not quit_program:
+        usr_choice = Dashboard()
 
-        input_box = TextInput(
-            hint_text="Enter budget amount",
-            multiline=False,
-            input_filter='float'
-        )
-
-        status_label = Label(text="")
-
-        def set_budget(instance):
-            try:
-                value = float(input_box.text)
-                if value <= 0:
-                    status_label.text = "Enter a value greater than 0"
-                else:
-                    self.bud.iniBud = value
-                    self.bud.balance = value
-                    self.update_labels()
-                    popup.dismiss()
-            except:
-                status_label.text = "Invalid input"
-
-        btn = Button(text="Set Budget", size_hint_y=None, height=40)
-        btn.bind(on_press=set_budget)
-
-        layout.add_widget(Label(text="Set Initial Budget"))
-        layout.add_widget(input_box)
-        layout.add_widget(status_label)
-        layout.add_widget(btn)
-
-        popup = Popup(
-            title="Initial Budget",
-            content=layout,
-            size_hint=(0.6, 0.4)
-        )
-        popup.open()
-
-    def add_transaction(self):
-        print("Add transaction clicked (GUI placeholder)")
-
-    def show_balance(self):
-        self.update_labels()
-
-    def show_spent(self):
-        self.update_labels()
-
-
-class OsCorpApp(App): 
-    def __init__(self, bud, **kwargs):
-        super().__init__(**kwargs)
-        self.bud = bud
-
-    def build(self):
-        Builder.load_file("dashboard.kv")
-        return DashboardScreen(self.bud)
-
-
-def starting_main():
-    bud = BudApp(0.0, 0.0, 0.0, 0.0)
-
-    OsCorpApp(bud).run()
-
+        match usr_choice:
+            case 1:
+                bud.Transaction(None)
+            case 2:
+                bud.Balance_left()
+            case 3:
+                bud.Spent()
+            case 4:
+                bud.Past_Tra()
+            case 5:
+                bud.Remove_tra()
+            case 6:
+                bud.Init_Bud()
+            case 7:
+                bud.Add_New_Budget()
+            case 8:
+                bud.Remove_Budget()
+            case 9:
+                bud.Switch_Budget()
+            case 10:
+                bud.Change_Bud()
+            case 11:
+                bud.Cat_Limit()
+            case 12:
+                bud.RemoveCatLim()
+            case 13:
+                bud.Bud_Limit()
+            case 14:
+                bud.RemoveBudLim()
+            case 15:
+                bud.Set_Bill()
+            case 16:
+                bud.Bills_Due()
+            case 17:
+                bud.Remove_Bill()
+            case 18:
+                quit_program = True
+                print('\nGoodbye!')
+                exit()
+            case _:
+                print('\nInput was invalid. Please try again.')
 
 if __name__ == "__main__":
-    starting_main()
+    main()
