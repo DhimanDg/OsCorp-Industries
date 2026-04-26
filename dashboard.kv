@@ -1,0 +1,168 @@
+#:import dp kivy.metrics.dp
+#:import ButtonBehavior kivy.uix.behaviors.ButtonBehavior
+
+<DashboardScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(15)
+        spacing: dp(15)
+
+        canvas.before:
+            Color:
+                rgba: (0.85, 0.4, 0.4, 1)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+
+            Label:
+                text: "OsCorp Industries"
+                bold: True
+                font_size: "20sp"
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            TextInput:
+                hint_text: "Search..."
+                size_hint_x: 0.4
+                multiline: False
+
+        GridLayout:
+            cols: 3
+            spacing: dp(10)
+            size_hint_y: None
+            height: dp(120)
+
+            StatCard:
+                title: "Total Balance"
+                value: root.balance_text
+
+            StatCard:
+                title: "Total Spent"
+                value: root.spent_text
+
+            StatCard:
+                title: "Initial Budget"
+                value: root.initial_text
+                on_press: root.open_budget_popup()
+
+        BoxLayout:
+            spacing: dp(10)
+
+            # Graph Placeholder
+            BoxLayout:
+                orientation: "vertical"
+
+                canvas.before:
+                    Color:
+                        rgba: (1,1,1,1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+
+                Label:
+                    text: "Graph (Placeholder)"
+                    color: (0,0,0,1)
+
+            GridLayout:
+                cols: 3
+                spacing: dp(10)
+                padding: dp(10)
+
+                canvas.before:
+                    Color:
+                        rgba: (1,1,1,1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+
+                CategoryIcon:
+                    text: "Utilities"
+                    icon: "Assets/utilities.png"
+
+                CategoryIcon:
+                    text: "Credit"
+                    icon: "Assets/credit.png"
+
+                CategoryIcon:
+                    text: "Travel"
+                    icon: "Assets/travel.png"
+
+                CategoryIcon:
+                    text: "Medical"
+                    icon: "Assets/medical.png"
+
+                CategoryIcon:
+                    text: "Shopping"
+                    icon: "Assets/shopping.png"
+
+                CategoryIcon:
+                    text: "Fun"
+                    icon: "Assets/fun.png"
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(10)
+
+            Button:
+                text: "New Transaction"
+                on_press: root.add_transaction()
+
+            Button:
+                text: "Show Balance"
+                on_press: root.show_balance()
+
+            Button:
+                text: "Show Spent"
+                on_press: root.show_spent()
+
+
+<StatCard@ButtonBehavior+BoxLayout>:
+    orientation: "vertical"
+    padding: dp(10)
+
+    title: ""
+    value: ""
+
+    canvas.before:
+        Color:
+            rgba: (0.95,0.95,0.95,1) if self.state == "down" else (1,1,1,1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]
+
+    Label:
+        text: root.title
+        color: (0,0,0,1)
+        font_size: "14sp"
+
+    Label:
+        text: root.value
+        bold: True
+        font_size: "18sp"
+        color: (0,0,0,1)
+
+
+<CategoryIcon@BoxLayout>:
+    orientation: "vertical"
+    spacing: dp(5)
+
+    icon: ""
+    text: ""
+
+    Image:
+        source: root.icon
+        size_hint_y: 0.7
+
+    Label:
+        text: root.text
+        font_size: "12sp"
+        color: (0,0,0,1)
