@@ -1,112 +1,45 @@
+from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager
+
 from bud_app_class import BudApp
-
-# Dashboard Prototype (will delete later)
-def Dashboard():
-    print('\nDashboard')
-    print('-'*9)
-    print(' 1. New Transaction')
-    print(' 2. Show Balance left')
-    print(' 3. Show Amount Spent')
-    print(' 4. Show Past Transactions')
-    print(' 5. Remove Transaction')
-    print(' 6. Show Initial Budget')
-    print(' 7. Add New Budget (Unfinished)')
-    print(' 8. Remove Budget (Unfinished)')
-    print(' 9. Switch Budget (Unfinished)')
-    print(' 10. Change Current Budget')
-    print(' 11. Set Spending Limit for Category')
-    print(' 12. Remove Spending Limit')
-    print(' 13. Set Budget Limit')
-    print(' 14. Remove Budget Limit')
-    print(' 15. Set Bill')
-    print(' 16. Show Upcoming Bills')
-    print(' 17. Remove Bill')
-    print(' 18. Exit App')
-    print('Enter your choice: ', end='')
-    valid_input = False
-    while not valid_input:
-        usr_choice = input()
-
-        if usr_choice in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']:
-            valid_input = True
-            return int(usr_choice)
-        else:
-            print('Incorrect Choice.  Enter again:', end=' ')
+from Pages.dashboard   import DashboardScreen
+from Pages.transaction import TransactionScreen
+from Pages.spent       import SpentScreen
+from Pages.settings    import SettingsScreen
+from Pages.balance     import BalanceScreen
+from Pages.bills       import BillsScreen
+from persistence import load_data, load_settings, get_theme_colors
 
 
-# The Main function
-def main():
-    greeting = 'Welcome to Green Goblin!'
-    tagline = 'An app for all your budgeting needs'
-    bud = BudApp(0.0, 0.0) #Sets variables in BudApp as floats
-    
-    print(f"{greeting:^35}")
-    print(f"{tagline}")
-    print('*'*35)
-    valid_input = False
+class OsCorpApp(App):
+    def __init__(self, bud, **kwargs):
+        super().__init__(**kwargs)
+        self.bud       = bud
+        self.app_state = load_settings()  
 
-    #Set the user's initial budget
-    while not valid_input:
-        try:
-            print("Enter your budget: ", end="$")
-            usr_bal = float(input())
+    def build(self):
+        sm = ScreenManager()
+        sm.add_widget(DashboardScreen  (self.bud,                    name="dashboard"))
+        sm.add_widget(TransactionScreen(self.bud,                    name="transaction"))
+        sm.add_widget(SpentScreen      (self.bud,                    name="spent"))
+        sm.add_widget(SettingsScreen   (self.bud, self.app_state,    name="settings"))
+        sm.add_widget(BalanceScreen    (self.bud,                    name="balance"))
+        sm.add_widget(BillsScreen      (self.bud,                    name="bills"))
 
-            if usr_bal <= 0:
-                print("Invalid budget value. Please try again.\n")
-            elif usr_bal > 0:
-                valid_input = True
-                bud.iniBud = usr_bal
-                bud.balance += usr_bal
-        
-        except(ValueError):
-            print("The value you entered is invalid. Please try again.\n")
+        colors = get_theme_colors(self.app_state["theme"])
+        for screen_name in sm.screen_names:
+            screen = sm.get_screen(screen_name)
+            if hasattr(screen, "apply_theme"):
+                screen.apply_theme(colors)
 
-    #Transitions to Dashboard
-    quit_program = False
-    while not quit_program:
-        usr_choice = Dashboard()
+        return sm
 
-        match usr_choice:
-            case 1:
-                bud.Transaction(None)
-            case 2:
-                bud.Balance_left()
-            case 3:
-                bud.Spent()
-            case 4:
-                bud.Past_Tra()
-            case 5:
-                bud.Remove_tra()
-            case 6:
-                bud.Init_Bud()
-            case 7:
-                bud.Add_New_Budget()
-            case 8:
-                bud.Remove_Budget()
-            case 9:
-                bud.Switch_Budget()
-            case 10:
-                bud.Change_Bud()
-            case 11:
-                bud.Cat_Limit()
-            case 12:
-                bud.RemoveCatLim()
-            case 13:
-                bud.Bud_Limit()
-            case 14:
-                bud.RemoveBudLim()
-            case 15:
-                bud.Set_Bill()
-            case 16:
-                bud.Bills_Due()
-            case 17:
-                bud.Remove_Bill()
-            case 18:
-                quit_program = True
-                print('\nGoodbye!')
-                exit()
-            case _:
-                print('\nInput was invalid. Please try again.')
+
+def starting_main():
+    bud = BudApp(0.0, 0.0)
+    load_data(bud)       
+    OsCorpApp(bud).run()
+
 
 if __name__ == "__main__":
-    main()
+    starting_main()
