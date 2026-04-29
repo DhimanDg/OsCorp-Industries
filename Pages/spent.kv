@@ -1,0 +1,96 @@
+#:import dp kivy.metrics.dp
+
+<SpentScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(15)
+        spacing: dp(12)
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            Button:
+                size_hint_x: None
+                width: dp(46)
+                background_normal: "Assets/back_arrow.png"
+                background_down:   "Assets/back_arrow.png"
+                background_color: root.icon_tint
+                on_press: root.go_back()
+
+            Label:
+                text: "Transaction History"
+                bold: True
+                font_size: "20sp"
+                color: (1, 1, 1, 1)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+                size_hint_x: None
+                width: dp(46)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(42)
+            spacing: dp(8)
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 0.15)
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+
+            Label:
+                text: "🔍"
+                size_hint_x: None
+                width: dp(36)
+                font_size: "18sp"
+
+            TextInput:
+                id: search_input
+                hint_text: "Search by category, description, date, or amount..."
+                multiline: False
+                background_color: (0, 0, 0, 0)
+                foreground_color: (1, 1, 1, 1)
+                hint_text_color: (1, 1, 1, 0.5)
+                cursor_color: (1, 1, 1, 1)
+                font_size: "14sp"
+                on_text: root.on_search(self.text)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(46)
+            spacing: dp(10)
+
+            Button:
+                text: "+ Add Transaction"
+                bold: True
+                font_size: "13sp"
+                background_color: (0.2, 0.6, 0.3, 1)
+                on_press: root.go_add_transaction()
+
+            Button:
+                text: "− Remove Transaction"
+                bold: True
+                font_size: "13sp"
+                background_color: (0.6, 0.18, 0.18, 1)
+                on_press: root.open_remove_popup()
+
+        ScrollView:
+            GridLayout:
+                id: transaction_list
+                cols: 1
+                spacing: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(4)

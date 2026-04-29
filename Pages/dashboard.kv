@@ -1,0 +1,196 @@
+#:import dp kivy.metrics.dp
+#:import ButtonBehavior kivy.uix.behaviors.ButtonBehavior
+
+<DashboardScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(15)
+        spacing: dp(15)
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+
+            Label:
+                text: "OsCorp Industries"
+                bold: True
+                font_size: "20sp"
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+                color: (1, 1, 1, 1)
+
+            Button:
+                size_hint_x: None
+                width: dp(46)
+                background_normal: "Assets/settings.png"
+                background_down:   "Assets/settings.png"
+                background_color: root.icon_tint
+                on_press: root.open_settings()
+
+        GridLayout:
+            cols: 3
+            spacing: dp(10)
+            size_hint_y: None
+            height: dp(120)
+
+            StatCard:
+                title: "Total Balance"
+                value: root.balance_text
+                card_color: root.card_color
+                card_color_p: root.card_color_p
+                text_color: root.text_color
+            StatCard:
+                title: "Total Spent"
+                value: root.spent_text
+                card_color: root.card_color
+                card_color_p: root.card_color_p
+                text_color: root.text_color
+            StatCard:
+                title: "Initial Budget"
+                value: root.initial_text
+                card_color: root.card_color
+                card_color_p: root.card_color_p
+                text_color: root.text_color
+                on_press: root.open_budget_popup()
+
+        BoxLayout:
+            spacing: dp(10)
+
+            BoxLayout:
+                orientation: "vertical"
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+
+                Label:
+                    text: "Spending by Category"
+                    color: root.text_color
+                    font_size: "13sp"
+                    size_hint_y: None
+                    height: dp(24)
+                    bold: True
+
+                SpendingChart:
+                    id: spending_chart
+
+            GridLayout:
+                cols: 3
+                spacing: dp(10)
+                padding: dp(10)
+                size_hint_x: 0.42
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+
+                CategoryIcon:
+                    text: "Household"
+                    icon: "Assets/house.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Household")
+                CategoryIcon:
+                    text: "Credit"
+                    icon: "Assets/credit.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Credit")
+                CategoryIcon:
+                    text: "Travel"
+                    icon: "Assets/travel.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Travel")
+                CategoryIcon:
+                    text: "Medical"
+                    icon: "Assets/medical.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Medical")
+                CategoryIcon:
+                    text: "Shopping"
+                    icon: "Assets/shopping.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Shopping")
+                CategoryIcon:
+                    text: "Fun"
+                    icon: "Assets/fun.png"
+                    text_color: root.text_color
+                    icon_tint: root.icon_tint
+                    on_press: root.open_category_popup("Fun")
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(10)
+
+            Button:
+                text: "New Transaction"
+                on_press: root.add_transaction()
+            Button:
+                text: "Show Balance"
+                on_press: root.show_balance()
+            Button:
+                text: "Show Spent"
+                on_press: root.show_spent()
+            Button:
+                text: "Bills"
+                on_press: root.show_bills()
+
+
+
+<StatCard@ButtonBehavior+BoxLayout>:
+    orientation: "vertical"
+    padding: dp(10)
+    title: ""
+    value: ""
+    card_color:   (1, 1, 1, 1)
+    card_color_p: (0.95, 0.95, 0.95, 1)
+    text_color:   (0, 0, 0, 1)
+    canvas.before:
+        Color:
+            rgba: self.card_color_p if self.state == "down" else self.card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]
+    Label:
+        text: root.title
+        color: root.text_color
+        font_size: "14sp"
+    Label:
+        text: root.value
+        bold: True
+        font_size: "18sp"
+        color: root.text_color
+
+<CategoryIcon@ButtonBehavior+BoxLayout>:
+    orientation: "vertical"
+    spacing: dp(5)
+    icon: ""
+    text: ""
+    text_color: (0, 0, 0, 1)
+    icon_tint: (0.25, 0.25, 0.25, 1)
+    Image:
+        source: root.icon
+        size_hint_y: 0.7
+        color: root.icon_tint
+    Label:
+        text: root.text
+        font_size: "12sp"
+        color: root.text_color

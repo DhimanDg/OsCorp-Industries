@@ -1,0 +1,109 @@
+#:import dp kivy.metrics.dp
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(16)
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            Button:
+                size_hint_x: None
+                width: dp(46)
+                background_normal: "Assets/back_arrow.png"
+                background_down:   "Assets/back_arrow.png"
+                background_color: root.icon_tint
+                on_press: root.go_back()
+
+            Label:
+                text: "Settings"
+                bold: True
+                font_size: "22sp"
+                color: (1, 1, 1, 1)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+                size_hint_x: None
+                width: dp(46)  
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(110)
+            padding: dp(14)
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: root.card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [10]
+
+            Label:
+                text: "Appearance"
+                bold: True
+                font_size: "15sp"
+                color: root.text_color
+                halign: "left"
+                text_size: self.size
+                size_hint_y: None
+                height: dp(24)
+
+            Button:
+                id: theme_btn
+                text: "Switch to Dark Mode"
+                size_hint_y: None
+                height: dp(42)
+                on_press: root.toggle_theme()
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(160)
+            padding: dp(14)
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: root.card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [10]
+
+            Label:
+                text: "Data Management"
+                bold: True
+                font_size: "15sp"
+                color: root.text_color
+                halign: "left"
+                text_size: self.size
+                size_hint_y: None
+                height: dp(24)
+
+            Button:
+                text: "Reset All Budget Data & Transactions"
+                size_hint_y: None
+                height: dp(42)
+                background_color: (0.8, 0.2, 0.2, 1)
+                on_press: root.confirm_reset_data()
+
+            Button:
+                text: "Reset Settings to Default"
+                size_hint_y: None
+                height: dp(42)
+                on_press: root.confirm_reset_settings()
+
+        Widget: 
