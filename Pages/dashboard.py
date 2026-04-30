@@ -161,11 +161,9 @@ class DashboardScreen(Screen):
         def set_budget(instance):
             try:
                 value = float(input_box.text)
-                if value <= 0:
+                if not self.bud.set_budget_gui(value):
                     status_label.text = "Enter a value greater than 0"
                 else:
-                    self.bud.iniBud  = value
-                    self.bud.balance = value
                     save_data(self.bud)
                     self.update_labels()
                     popup.dismiss()

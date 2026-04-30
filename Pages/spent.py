@@ -66,17 +66,7 @@ class SpentScreen(Screen):
 
         def make_remove(idx):
             def _remove(inst):
-                amt     = self.bud.tra_spent[idx]
-                cat_key = self.bud.cat_letter[idx]
-                self.bud.category_spent[cat_key] -= amt
-                self.bud.balance += amt
-                self.bud.spent   -= amt
-                del self.bud.tra_spent[idx]
-                del self.bud.tra_desc[idx]
-                del self.bud.tra_date[idx]
-                del self.bud.cat_letter[idx]
-                del self.bud.tra_category[idx]
-                self.bud.Gen_Tra()
+                self.bud.remove_transaction_gui(idx)
                 save_data(self.bud)
                 self.manager.get_screen("dashboard").update_labels()
                 if popup_ref:

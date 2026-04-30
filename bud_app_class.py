@@ -6,6 +6,7 @@ class BudApp:
         self.balance = balance
         self.usr_bills = []
         self.bill_due = []
+        self.bill_labels = []
         self.transaction = 0.0
         self.spent = 0.0
         self.BudLimit = 0.0
@@ -24,6 +25,27 @@ class BudApp:
         self.cat_letter   = []
         self.tra_category = []
         self.tra_overview = []
+
+    def recalculate_totals(self):
+        for key in self.category_spent:
+            self.category_spent[key] = 0.0
+        for amount, category_letter in zip(self.tra_spent, self.cat_letter):
+            if category_letter in self.category_spent:
+                self.category_spent[category_letter] += amount
+        self.spent = round(sum(self.tra_spent), 2)
+        self.balance = round(self.iniBud - self.spent, 2)
+        self.Gen_Tra()
+
+    def set_budget_gui(self, amount):
+        try:
+            amount = float(amount)
+        except (TypeError, ValueError):
+            return False
+        if amount <= 0:
+            return False
+        self.iniBud = amount
+        self.recalculate_totals()
+        return True
 
     def add_transaction_gui(self, amount, description, category_letter, date):
         formats = ["%Y-%m-%d", "%m-%d-%Y", "%Y/%m/%d", "%m/%d/%Y"]
@@ -64,6 +86,17 @@ class BudApp:
         self.spent   += amount
 
         self.Gen_Tra()
+        return True
+
+    def remove_transaction_gui(self, index):
+        if not 0 <= index < len(self.tra_spent):
+            return False
+        del self.tra_spent[index]
+        del self.tra_desc[index]
+        del self.tra_date[index]
+        del self.cat_letter[index]
+        del self.tra_category[index]
+        self.recalculate_totals()
         return True
 
 

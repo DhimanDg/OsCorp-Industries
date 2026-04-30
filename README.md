@@ -1,9 +1,47 @@
-# OsCorp-Industries
-A simple and easy to use budgeting app that allows users to track their budget and become financially responsible!
+# OsCorp Industries Budget App
 
+A simple budgeting app for tracking a budget, spending categories, transaction history, and upcoming bills.
 
-Purpose: For our semeter project our team OsCorp Industries have decided to make an easy to use budgeting app that allows users to track their expenses easily without their data being tracked. Simplicity and usability was our first priority while developing this app and we believe any user regardless of their knowledge with tech can use it!
+## What Is Integrated
 
+- Kivy frontend screens from the frontend branch.
+- Backend budget logic from `bud_app_class.py`.
+- Local SQLite persistence through Python's built-in `sqlite3` module.
 
+## Local Database
 
-Description: This app is an easy to use budgeting app that has been made using the Python language as it is easy to use and is a great choice for new developers. 
+The app stores data in:
+
+```text
+User Data/oscorp_budget.db
+```
+
+The database is created automatically the first time the app runs. It uses structured tables for:
+
+- `budget_state`
+- `categories`
+- `transactions`
+- `bills`
+- `settings`
+
+Older JSON data files in `User Data/` are migrated automatically if they exist and the SQLite database is still empty.
+
+## Setup
+
+Install Python, then install the app dependency:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+## Run
+
+From this project folder:
+
+```bash
+python budget_app_main.py
+```
+
+## Reset Data
+
+Use the Settings screen inside the app to reset budget data or settings. Resetting budget data clears the SQLite transaction and bill records while keeping the database structure ready for future use.
