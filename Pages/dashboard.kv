@@ -13,10 +13,17 @@
 
         # ── Top header bar ──────────────────────────────────────────────
         BoxLayout:
-            size_hint_y: None
-            height: dp(56)
-            padding: (dp(16), dp(8), dp(12), dp(4))
-            spacing: dp(8)
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            height: '60dp'
+            padding: (10, 0)
+            spacing: 10
+            canvas.before:
+                Color:
+                    rgba: root.card_color
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
             Label:
                 text: "OsCorp Industries"
@@ -25,7 +32,7 @@
                 halign: "left"
                 valign: "middle"
                 text_size: self.size
-                color: root.header_color
+                color: root.text_color
 
             Widget:
 
@@ -44,7 +51,7 @@
             size_hint_y: None
             height: dp(198)
             padding: (dp(12), dp(0), dp(12), dp(8))
-            spacing: dp(8)
+            spacing: dp(4)
 
             StatCard:
                 title: "Total Balance"
@@ -157,46 +164,61 @@
         BoxLayout:
             orientation: "vertical"
             size_hint_y: None
-            height: dp(196)
+            height: dp(100)
             padding: (dp(12), dp(0), dp(12), dp(16))
-            spacing: dp(10)
+            spacing: dp(20)
+            GridLayout:
+                cols: 4
+                spacing: dp(8)
+                padding: dp(14)
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [40]
 
-            Button:
-                text: "New Transaction"
-                font_size: "15sp"
-                bold: True
-                background_normal: ""
-                background_down: ""
-                background_color: root.button_color
-                color: (1, 1, 1, 1)
-                on_press: root.add_transaction()
+                TabIcon:
+                    text: "New Transaction"
+                    icon: "Assets/Transaction.png"
+                    font_size: "15sp"
+                    bold: True
+                    background_normal: ""
+                    background_down: ""
+                    background_color: root.button_color
+                    color: (1, 1, 1, 1)
+                    on_press: root.add_transaction()
 
-            Button:
-                text: "Show Balance"
-                font_size: "15sp"
-                background_normal: ""
-                background_down: ""
-                background_color: root.button_color
-                color: (1, 1, 1, 1)
-                on_press: root.show_balance()
+                TabIcon:
+                    text: "Show Balance"
+                    icon: "Assets/Balance.png"
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_down: ""
+                    background_color: root.button_color
+                    color: (1, 1, 1, 1)
+                    on_press: root.show_balance()
 
-            Button:
-                text: "Show Spent"
-                font_size: "15sp"
-                background_normal: ""
-                background_down: ""
-                background_color: root.button_color
-                color: (1, 1, 1, 1)
-                on_press: root.show_spent()
+                TabIcon:
+                    text: "Show Spent"
+                    icon: "Assets/Spent.png"
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_down: ""
+                    background_color: root.button_color
+                    color: (1, 1, 1, 1)
+                    on_press: root.show_spent()
 
-            Button:
-                text: "Bills"
-                font_size: "15sp"
-                background_normal: ""
-                background_down: ""
-                background_color: root.button_color
-                color: (1, 1, 1, 1)
-                on_press: root.show_bills()
+                TabIcon:
+                    text: "Bills"
+                    icon: "Assets/Bills.png"
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_down: ""
+                    background_color: root.button_color
+                    color: (1, 1, 1, 1)
+                    on_press: root.show_bills()
 
 
 # ── Reusable widgets ─────────────────────────────────────────────────────────
@@ -257,3 +279,19 @@
         halign: "center"
         valign: "top"
         text_size: self.size
+
+<TabIcon@ButtonBehavior+BoxLayout>:
+    orientation: "vertical"
+    spacing: dp(5)
+    icon: ""
+    text: ""
+    text_color: (0, 0, 0, 1)
+    icon_tint: (0.25, 0.25, 0.25, 1)
+    Image:
+        source: root.icon
+        size_hint_y: 2.0
+        color: root.icon_tint
+    Label:
+        text: root.text
+        font_size: "12sp"
+        color: root.text_color
