@@ -4,8 +4,6 @@
 <DashboardScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: dp(15)
-        spacing: dp(15)
         canvas.before:
             Color:
                 rgba: root.bg_color
@@ -13,45 +11,40 @@
                 pos: self.pos
                 size: self.size
 
+        # ── Top header bar ──────────────────────────────────────────────
         BoxLayout:
             size_hint_y: None
-            height: dp(50)
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint: (1, None)
-                height: '60dp'
-                padding: (10, 0)
-                spacing: 10
-                canvas.before:
-                    Color:
-                        rgba: root.card_color
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [45]
+            height: dp(56)
+            padding: (dp(16), dp(8), dp(12), dp(4))
+            spacing: dp(8)
 
-                Label:
-                    text: "OsCorp Industries"
-                    bold: True
-                    font_size: "20sp"
-                    halign: "left"
-                    valign: "middle"
-                    text_size: self.size
-                    color: root.text_color
+            Label:
+                text: "OsCorp Industries"
+                bold: True
+                font_size: "20sp"
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+                color: root.header_color
 
-                Button:
-                    size_hint_x: None
-                    width: dp(60)
-                    background_normal: "Assets/settings.png"
-                    background_down:   "Assets/settings.png"
-                    background_color: root.icon_tint
-                    on_press: root.open_settings()
+            Widget:
 
-        GridLayout:
-            cols: 3
-            spacing: dp(10)
+            Button:
+                size_hint: (None, None)
+                size: (dp(38), dp(38))
+                pos_hint: {"center_y": 0.5}
+                background_normal: "Assets/settings.png"
+                background_down:   "Assets/settings.png"
+                background_color: root.icon_tint
+                on_press: root.open_settings()
+
+        # ── Stat cards (3 stacked vertically) ───────────────────────────
+        BoxLayout:
+            orientation: "vertical"
             size_hint_y: None
-            height: dp(120)
+            height: dp(198)
+            padding: (dp(12), dp(0), dp(12), dp(8))
+            spacing: dp(8)
 
             StatCard:
                 title: "Total Balance"
@@ -59,12 +52,14 @@
                 card_color: root.card_color
                 card_color_p: root.card_color_p
                 text_color: root.text_color
+
             StatCard:
                 title: "Total Spent"
                 value: root.spent_text
                 card_color: root.card_color
                 card_color_p: root.card_color_p
                 text_color: root.text_color
+
             StatCard:
                 title: "Initial Budget"
                 value: root.initial_text
@@ -73,8 +68,11 @@
                 text_color: root.text_color
                 on_press: root.open_budget_popup()
 
+        # ── Spending chart — expands to fill available space ─────────────
         BoxLayout:
-            spacing: dp(10)
+            orientation: "vertical"
+            size_hint_y: 1
+            padding: (dp(12), dp(0), dp(12), dp(8))
 
             BoxLayout:
                 orientation: "vertical"
@@ -84,31 +82,39 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(8)]
+                        radius: [dp(10)]
 
                 Label:
                     text: "Spending by Category"
                     color: root.text_color
                     font_size: "13sp"
                     size_hint_y: None
-                    height: dp(24)
+                    height: dp(30)
                     bold: True
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
 
                 SpendingChart:
                     id: spending_chart
 
+        # ── Category icons — expands to fill available space ─────────────
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 0.85
+            padding: (dp(12), dp(0), dp(12), dp(8))
+
             GridLayout:
                 cols: 3
-                spacing: dp(10)
-                padding: dp(10)
-                size_hint_x: 0.42
+                spacing: dp(8)
+                padding: dp(14)
                 canvas.before:
                     Color:
                         rgba: root.card_color
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(8)]
+                        radius: [dp(10)]
 
                 CategoryIcon:
                     text: "Household"
@@ -147,49 +153,59 @@
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Fun")
 
+        # ── Bottom action buttons ────────────────────────────────────────
         BoxLayout:
+            orientation: "vertical"
             size_hint_y: None
-            height: dp(60)
+            height: dp(196)
+            padding: (dp(12), dp(0), dp(12), dp(16))
             spacing: dp(10)
-            canvas.before:
-                Color:
-                    rgba: root.card_color
-                RoundedRectangle:
-                    size: self.size
-                    pos: self.pos
-                    radius: [40]
 
-            TabIcon:
+            Button:
                 text: "New Transaction"
-                icon: "Assets/Transaction.png"
-                text_color: root.text_color
-                icon_tint: root.icon_tint
+                font_size: "15sp"
+                bold: True
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.add_transaction()
-            TabIcon:
-                icon: "Assets/Balance.png"
+
+            Button:
                 text: "Show Balance"
-                text_color: root.text_color
-                icon_tint: root.icon_tint
+                font_size: "15sp"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_balance()
-            TabIcon:
-                icon: "Assets/Spent.png"
+
+            Button:
                 text: "Show Spent"
-                text_color: root.text_color
-                icon_tint: root.icon_tint
+                font_size: "15sp"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_spent()
-            TabIcon:
-                icon: "Assets/Bills.png"
+
+            Button:
                 text: "Bills"
-                font_size: 25
-                text_color: root.text_color
-                icon_tint: root.icon_tint
+                font_size: "15sp"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_bills()
 
 
+# ── Reusable widgets ─────────────────────────────────────────────────────────
 
 <StatCard@ButtonBehavior+BoxLayout>:
     orientation: "vertical"
-    padding: dp(10)
+    padding: (dp(16), dp(8))
+    size_hint_y: None
+    height: dp(58)
     title: ""
     value: ""
     card_color:   (1, 1, 1, 1)
@@ -201,46 +217,43 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(8)]
-    Label:
-        text: root.title
-        color: root.text_color
-        font_size: "14sp"
-    Label:
-        text: root.value
-        bold: True
-        font_size: "18sp"
-        color: root.text_color
+            radius: [dp(10)]
+
+    BoxLayout:
+        Label:
+            text: root.title
+            color: root.text_color
+            font_size: "13sp"
+            halign: "left"
+            valign: "middle"
+            text_size: self.size
+
+        Label:
+            text: root.value
+            bold: True
+            font_size: "17sp"
+            color: root.text_color
+            halign: "right"
+            valign: "middle"
+            text_size: self.size
+
 
 <CategoryIcon@ButtonBehavior+BoxLayout>:
     orientation: "vertical"
-    spacing: dp(5)
+    spacing: dp(6)
     icon: ""
     text: ""
     text_color: (0, 0, 0, 1)
     icon_tint: (0.25, 0.25, 0.25, 1)
     Image:
         source: root.icon
-        size_hint_y: 0.7
+        size_hint_y: 0.65
         color: root.icon_tint
     Label:
         text: root.text
         font_size: "12sp"
         color: root.text_color
-
-<TabIcon@ButtonBehavior+BoxLayout>:
-    orientation: "vertical"
-    spacing: dp(5)
-    icon: ""
-    text: ""
-    text_color: (0, 0, 0, 1)
-    icon_tint: (0.25, 0.25, 0.25, 1)
-    Image:
-        source: root.icon
-        size_hint_y: 2.0
-        color: root.icon_tint
-    Label:
-        text: root.text
-        font_size: "12sp"
-        color: root.text_color
-
+        size_hint_y: 0.35
+        halign: "center"
+        valign: "top"
+        text_size: self.size
