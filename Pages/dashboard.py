@@ -47,7 +47,13 @@ class SpendingChart(Widget):
         self.canvas.clear()
 
         values  = [self.bud.category_spent[k] for k in self.CAT_LETTERS]
-        max_val = max(values) if any(v > 0 for v in values) else 1
+        
+        # handles posive and negative spent values
+        max_val = max(values)
+        min_val = min(values)
+
+        if max_val == min_val:
+            max_val += 1
 
         w, h    = self.size
         x0, y0  = self.pos
@@ -57,6 +63,11 @@ class SpendingChart(Widget):
         n       = len(self.CATEGORIES)
         bar_w   = (chart_w / n) * 0.58
         gap     = (chart_w / n) * 0.42
+
+        # computing zero baseline
+        value_range = max_val - min_val
+        zero_ratio = (0 - min_val) / value_range
+        zero_y = y0 + pad_b + zero_ratio * chart_h
 
         def draw_text(canvas, text, tx, ty, font_size, color):
             lbl = CoreLabel(text=text, font_size=font_size, color=color)
@@ -75,15 +86,26 @@ class SpendingChart(Widget):
             for i, (cat, key, short) in enumerate(
                     zip(self.CATEGORIES, self.CAT_LETTERS, self.CAT_SHORT)):
                 spent = self.bud.category_spent[key]
-                bar_h = (spent / max_val) * chart_h if max_val > 0 else 0
+                bar_h = (abs(spent) / value_range) * chart_h
+
                 bar_x = x0 + pad_l + i * (bar_w + gap)
-                bar_y = y0 + pad_b
                 bar_cx = bar_x + bar_w / 2 
 
-                Color(*self.CATEGORY_COLORS[cat])
+                # position relative to zero
+                if spent >= 0:
+                    bar_y = zero_y
+                else:
+                    bar_y = zero_y - bar_h
+
+                # color tweak when spent is negative
+                if spent < 0:
+                    Color(0.7,0.3,0.3,1)
+                else:
+                    Color(*self.CATEGORY_COLORS[cat])
+
                 Rectangle(pos=(bar_x, bar_y), size=(bar_w, bar_h))
 
-                if spent > 0:
+                if spent != 0:
                     draw_text(self.canvas,
                               f"${spent:,.0f}",
                               bar_cx, bar_y + bar_h + 2,
@@ -94,9 +116,10 @@ class SpendingChart(Widget):
                           bar_cx, y0 + 4,
                           10, self._text_color)
 
-            Color(0.7, 0.7, 0.7, 1)
-            Line(points=[x0 + pad_l, y0 + pad_b,
-                         x0 + w - pad_r, y0 + pad_b], width=1.2)
+            # Zero baseline
+            Color(0.5, 0.5, 0.5, 1)
+            Line(points=[x0 + pad_l, zero_y,
+                         x0 + w - pad_r, zero_y], width=1.2)
 
 
 
