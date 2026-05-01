@@ -24,7 +24,7 @@
                 halign: "left"
                 valign: "middle"
                 text_size: self.size
-                color: (1, 1, 1, 1)
+                color: root.header_color
 
             Button:
                 size_hint_x: None
@@ -71,7 +71,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [10]
+                        radius: [dp(8)]
 
                 Label:
                     text: "Spending by Category"
@@ -95,43 +95,43 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [10]
+                        radius: [dp(8)]
 
                 CategoryIcon:
                     text: "Household"
                     icon: "Assets/house.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Household")
                 CategoryIcon:
                     text: "Credit"
                     icon: "Assets/credit.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Credit")
                 CategoryIcon:
                     text: "Travel"
                     icon: "Assets/travel.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Travel")
                 CategoryIcon:
                     text: "Medical"
                     icon: "Assets/medical.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Medical")
                 CategoryIcon:
                     text: "Shopping"
                     icon: "Assets/shopping.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Shopping")
                 CategoryIcon:
                     text: "Fun"
                     icon: "Assets/fun.png"
                     text_color: root.text_color
-                    icon_tint: root.icon_tint
+                    icon_tint: root.text_color
                     on_press: root.open_category_popup("Fun")
 
         BoxLayout:
@@ -141,15 +141,31 @@
 
             Button:
                 text: "New Transaction"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.add_transaction()
             Button:
                 text: "Show Balance"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_balance()
             Button:
                 text: "Show Spent"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_spent()
             Button:
                 text: "Bills"
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
                 on_press: root.show_bills()
 
 
@@ -168,7 +184,7 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [10]
+            radius: [dp(8)]
     Label:
         text: root.title
         color: root.text_color

@@ -2,8 +2,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 from kivy.properties import ListProperty
 from persistence import (
-    save_settings, load_settings, reset_settings,
-    reset_data, save_data, get_theme_colors,
+    save_settings, reset_settings,
+    reset_data, get_theme_colors,
 )
 
 
@@ -12,6 +12,9 @@ class SettingsScreen(Screen):
     card_color    = ListProperty([1, 1, 1, 1])
     text_color    = ListProperty([0, 0, 0, 1])
     icon_tint     = ListProperty([1, 1, 1, 1])
+    header_color  = ListProperty([1, 1, 1, 1])
+    button_color  = ListProperty([0.16, 0.36, 0.38, 1])
+    danger_color  = ListProperty([0.72, 0.20, 0.22, 1])
 
     def __init__(self, bud, app_state, **kwargs):
         super().__init__(**kwargs)
@@ -79,11 +82,17 @@ class SettingsScreen(Screen):
     def go_back(self):
         self.manager.current = "dashboard"
 
+    def logout(self):
+        self.manager.current = "login"
+
     def apply_theme(self, colors):
         self.bg_color   = colors["bg"]
         self.card_color = colors["card_bg"]
         self.text_color = colors["text"]
         self.icon_tint  = colors.get("icon_tint", [1, 1, 1, 1])
+        self.header_color = colors.get("header_text", [1, 1, 1, 1])
+        self.button_color = colors.get("button", [0.16, 0.36, 0.38, 1])
+        self.danger_color = colors.get("danger", [0.72, 0.20, 0.22, 1])
 
 
 Builder.load_file("Pages/settings.kv")

@@ -1,14 +1,18 @@
-from datetime import datetime
-from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 from kivy.properties import ListProperty
+from kivy.uix.screenmanager import Screen
 
 
 class BillsScreen(Screen):
-    bg_color   = ListProperty([0.85, 0.4, 0.4, 1])
+    bg_color = ListProperty([0.85, 0.4, 0.4, 1])
     card_color = ListProperty([1, 1, 1, 1])
     text_color = ListProperty([0, 0, 0, 1])
-    icon_tint  = ListProperty([1, 1, 1, 1])
+    icon_tint = ListProperty([1, 1, 1, 1])
+    header_color = ListProperty([1, 1, 1, 1])
+    muted_color = ListProperty([0.40, 0.45, 0.45, 1])
+    success_color = ListProperty([0.18, 0.55, 0.38, 1])
+    danger_color = ListProperty([0.72, 0.20, 0.22, 1])
+    warning_color = ListProperty([0.88, 0.58, 0.14, 1])
 
     def __init__(self, bud, **kwargs):
         super().__init__(**kwargs)
@@ -18,12 +22,11 @@ class BillsScreen(Screen):
         self._build_cards()
 
     def _build_cards(self):
-        from kivy.uix.boxlayout  import BoxLayout
-        from kivy.uix.label      import Label
-        from kivy.uix.button     import Button
-        from kivy.uix.widget     import Widget
-        from kivy.graphics       import Color, RoundedRectangle
-        from kivy.metrics        import dp
+        from kivy.graphics import Color, RoundedRectangle
+        from kivy.metrics import dp
+        from kivy.uix.boxlayout import BoxLayout
+        from kivy.uix.button import Button
+        from kivy.uix.label import Label
 
         container = self.ids.bill_list
         container.clear_widgets()
@@ -31,7 +34,7 @@ class BillsScreen(Screen):
         if not self.bud.usr_bills:
             container.add_widget(Label(
                 text="No bills added yet.\nTap '+ Add Bill' to get started.",
-                color=(1, 1, 1, 0.7),
+                color=self.muted_color,
                 font_size="15sp",
                 halign="center",
                 size_hint_y=None,
@@ -43,18 +46,17 @@ class BillsScreen(Screen):
 
         for i, (amount, due, label) in enumerate(
                 zip(self.bud.usr_bills, self.bud.bill_due, labels)):
-
             days_diff, status_str = self.bud.get_bill_status(i)
 
             if days_diff < 0:
-                accent = (0.9, 0.25, 0.25, 1)
-                status_color = (0.9, 0.25, 0.25, 1)
+                accent = tuple(self.danger_color)
+                status_color = tuple(self.danger_color)
             elif days_diff <= 7:
-                accent = (0.95, 0.65, 0.1, 1)
-                status_color = (0.95, 0.65, 0.1, 1)
+                accent = tuple(self.warning_color)
+                status_color = tuple(self.warning_color)
             else:
-                accent = (0.25, 0.75, 0.45, 1)
-                status_color = (0.25, 0.75, 0.45, 1)
+                accent = tuple(self.success_color)
+                status_color = tuple(self.success_color)
 
             card = BoxLayout(
                 orientation="vertical",
@@ -112,7 +114,7 @@ class BillsScreen(Screen):
             due_lbl = Label(
                 text=f"Due: {due.date()}",
                 font_size="12sp",
-                color=(0.55, 0.55, 0.55, 1),
+                color=self.muted_color,
                 halign="left", valign="middle",
             )
             due_lbl.bind(size=lambda w, s: setattr(w, "text_size", s))
@@ -141,7 +143,10 @@ class BillsScreen(Screen):
                 size_hint_y=None,
                 height=dp(26),
                 font_size="11sp",
-                background_color=(0.6, 0.18, 0.18, 1),
+                background_normal="",
+                background_down="",
+                background_color=self.danger_color,
+                color=(1, 1, 1, 1),
             )
             remove_btn.bind(on_press=make_remove(i))
             inner.add_widget(remove_btn)
@@ -150,23 +155,23 @@ class BillsScreen(Screen):
             container.add_widget(card)
 
     def open_add_popup(self):
-        from kivy.uix.popup     import Popup
         from kivy.uix.boxlayout import BoxLayout
-        from kivy.uix.label     import Label
+        from kivy.uix.button import Button
+        from kivy.uix.label import Label
+        from kivy.uix.popup import Popup
         from kivy.uix.textinput import TextInput
-        from kivy.uix.button    import Button
-        from persistence        import save_data
+        from persistence import save_data
 
         layout = BoxLayout(orientation="vertical", padding=12, spacing=10)
 
-        lbl_input  = TextInput(hint_text="Bill name (e.g. Rent, Electric)...",
-                               multiline=False)
-        amt_input  = TextInput(hint_text="Amount ($)",
-                               input_filter="float", multiline=False)
+        lbl_input = TextInput(hint_text="Bill name (e.g. Rent, Electric)",
+                              multiline=False)
+        amt_input = TextInput(hint_text="Amount ($)",
+                              input_filter="float", multiline=False)
         date_input = TextInput(hint_text="Due date: YYYY-MM-DD or MM/DD/YYYY",
                                multiline=False)
-        err_lbl    = Label(text="", size_hint_y=None, height=24,
-                           color=(1, 0.4, 0.4, 1))
+        err_lbl = Label(text="", size_hint_y=None, height=24,
+                        color=self.danger_color)
 
         def submit(inst):
             ok = self.bud.add_bill_gui(
@@ -179,7 +184,7 @@ class BillsScreen(Screen):
                 popup.dismiss()
                 self._build_cards()
             else:
-                err_lbl.text = "Invalid amount or date — please check and try again."
+                err_lbl.text = "Invalid amount or date - please check and try again."
 
         layout.add_widget(Label(text="Bill Name"))
         layout.add_widget(lbl_input)
@@ -190,7 +195,9 @@ class BillsScreen(Screen):
         layout.add_widget(err_lbl)
 
         btn = Button(text="Add Bill", size_hint_y=None, height=42,
-                     background_color=(0.2, 0.6, 0.3, 1))
+                     background_normal="", background_down="",
+                     background_color=self.success_color,
+                     color=(1, 1, 1, 1))
         btn.bind(on_press=submit)
         layout.add_widget(btn)
 
@@ -199,10 +206,15 @@ class BillsScreen(Screen):
         popup.open()
 
     def apply_theme(self, colors):
-        self.bg_color   = colors["bg"]
+        self.bg_color = colors["bg"]
         self.card_color = colors["card_bg"]
         self.text_color = colors["text"]
-        self.icon_tint  = colors.get("icon_tint", [1, 1, 1, 1])
+        self.icon_tint = colors.get("icon_tint", [1, 1, 1, 1])
+        self.header_color = colors.get("header_text", [1, 1, 1, 1])
+        self.muted_color = colors.get("muted_text", [0.40, 0.45, 0.45, 1])
+        self.success_color = colors.get("success", [0.18, 0.55, 0.38, 1])
+        self.danger_color = colors.get("danger", [0.72, 0.20, 0.22, 1])
+        self.warning_color = colors.get("warning", [0.88, 0.58, 0.14, 1])
         if hasattr(self, "ids") and "bill_list" in self.ids:
             self._build_cards()
 

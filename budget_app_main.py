@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 
 from bud_app_class import BudApp
+from Pages.login       import LoginScreen
 from Pages.dashboard   import DashboardScreen
 from Pages.transaction import TransactionScreen
 from Pages.spent       import SpentScreen
@@ -19,6 +20,7 @@ class OsCorpApp(App):
 
     def build(self):
         sm = ScreenManager()
+        sm.add_widget(LoginScreen      (self.app_state,              name="login"))
         sm.add_widget(DashboardScreen  (self.bud,                    name="dashboard"))
         sm.add_widget(TransactionScreen(self.bud,                    name="transaction"))
         sm.add_widget(SpentScreen      (self.bud,                    name="spent"))
@@ -32,6 +34,7 @@ class OsCorpApp(App):
             if hasattr(screen, "apply_theme"):
                 screen.apply_theme(colors)
 
+        sm.current = "login"
         return sm
 
 

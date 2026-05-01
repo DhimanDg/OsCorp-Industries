@@ -1,0 +1,134 @@
+#:import dp kivy.metrics.dp
+
+<LoginScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(26)
+        spacing: dp(16)
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(90)
+            spacing: dp(4)
+
+            Label:
+                text: "OsCorp Industries"
+                bold: True
+                font_size: "26sp"
+                color: root.header_color
+                halign: "center"
+                valign: "bottom"
+                text_size: self.size
+
+            Label:
+                text: "Budget Manager"
+                font_size: "14sp"
+                color: root.header_color
+                halign: "center"
+                valign: "top"
+                text_size: self.size
+
+        Widget:
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.62, None)
+            height: dp(330)
+            pos_hint: {"center_x": 0.5}
+            padding: dp(18)
+            spacing: dp(12)
+            canvas.before:
+                Color:
+                    rgba: root.card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(8)]
+
+            Label:
+                text: root.title_text
+                bold: True
+                font_size: "20sp"
+                color: root.text_color
+                size_hint_y: None
+                height: dp(28)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Label:
+                text: root.subtitle_text
+                font_size: "13sp"
+                color: root.muted_color
+                size_hint_y: None
+                height: dp(22)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            TextInput:
+                id: username
+                hint_text: "Username"
+                multiline: False
+                font_size: "15sp"
+                size_hint_y: None
+                height: dp(44)
+                padding: [dp(12), dp(11), dp(12), dp(10)]
+                background_normal: ""
+                background_active: ""
+                background_color: root.field_bg
+                foreground_color: root.field_text
+                hint_text_color: root.field_hint
+                cursor_color: root.field_text
+                write_tab: False
+                on_text_validate: password.focus = True
+
+            TextInput:
+                id: password
+                hint_text: "Password"
+                password: True
+                multiline: False
+                font_size: "15sp"
+                size_hint_y: None
+                height: dp(44)
+                padding: [dp(12), dp(11), dp(12), dp(10)]
+                background_normal: ""
+                background_active: ""
+                background_color: root.field_bg
+                foreground_color: root.field_text
+                hint_text_color: root.field_hint
+                cursor_color: root.field_text
+                write_tab: False
+                on_text_validate: root.submit()
+
+            Label:
+                text: root.status_text
+                font_size: "12sp"
+                bold: True
+                color: root.success_color if root.status_text == "Account created." else root.danger_color
+                size_hint_y: None
+                height: dp(26)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Button:
+                text: root.action_text
+                bold: True
+                font_size: "15sp"
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ""
+                background_down: ""
+                background_color: root.button_color
+                color: (1, 1, 1, 1)
+                on_press: root.submit()
+
+        Widget:

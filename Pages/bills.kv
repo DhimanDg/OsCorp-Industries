@@ -21,7 +21,7 @@
                 size_hint_x: None
                 width: dp(46)
                 background_normal: "Assets/back_arrow.png"
-                background_down:   "Assets/back_arrow.png"
+                background_down: "Assets/back_arrow.png"
                 background_color: root.icon_tint
                 on_press: root.go_back()
 
@@ -29,18 +29,21 @@
                 text: "Bills & Reminders"
                 bold: True
                 font_size: "20sp"
-                color: (1, 1, 1, 1)
+                color: root.header_color
                 halign: "center"
                 valign: "middle"
                 text_size: self.size
 
             Button:
                 size_hint_x: None
-                width: dp(80)
+                width: dp(86)
                 text: "+ Add Bill"
                 font_size: "13sp"
                 bold: True
-                background_color: (0.2, 0.55, 0.3, 1)
+                background_normal: ""
+                background_down: ""
+                background_color: root.success_color
+                color: (1, 1, 1, 1)
                 on_press: root.open_add_popup()
 
         BoxLayout:
@@ -54,16 +57,16 @@
                 padding: dp(6)
                 canvas.before:
                     Color:
-                        rgba: (1, 1, 1, 0.92)
+                        rgba: root.card_color
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
                         radius: [dp(6)]
                 Label:
-                    text: "● Overdue"
+                    text: "Overdue"
                     font_size: "11sp"
                     bold: True
-                    color: (0.85, 0.15, 0.15, 1)
+                    color: root.danger_color
                     halign: "center"
                     valign: "middle"
                     text_size: self.size
@@ -73,16 +76,16 @@
                 padding: dp(6)
                 canvas.before:
                     Color:
-                        rgba: (1, 1, 1, 0.92)
+                        rgba: root.card_color
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
                         radius: [dp(6)]
                 Label:
-                    text: "● Due ≤ 7 days"
+                    text: "Due <= 7 days"
                     font_size: "11sp"
                     bold: True
-                    color: (0.80, 0.50, 0.0, 1)
+                    color: root.warning_color
                     halign: "center"
                     valign: "middle"
                     text_size: self.size
@@ -92,16 +95,16 @@
                 padding: dp(6)
                 canvas.before:
                     Color:
-                        rgba: (1, 1, 1, 0.92)
+                        rgba: root.card_color
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
                         radius: [dp(6)]
                 Label:
-                    text: "● Coming up"
+                    text: "Coming up"
                     font_size: "11sp"
                     bold: True
-                    color: (0.1, 0.60, 0.30, 1)
+                    color: root.success_color
                     halign: "center"
                     valign: "middle"
                     text_size: self.size

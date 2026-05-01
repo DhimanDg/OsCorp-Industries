@@ -1,5 +1,9 @@
+import configparser
+import hashlib
+import hmac
 import json
 import os
+import secrets
 import sqlite3
 from datetime import datetime
 
@@ -15,7 +19,11 @@ DATABASE_FILE = os.path.join(USER_DATA_DIR, "oscorp_budget.db")
 
 # Kept for one-time migration from the older JSON storage.
 DATA_FILE = os.path.join(USER_DATA_DIR, "oscorp_data.json")
-SETTINGS_FILE = os.path.join(USER_DATA_DIR, "oscorp_settings.json")
+LEGACY_SETTINGS_FILE = os.path.join(USER_DATA_DIR, "oscorp_settings.json")
+SETTINGS_FILE = os.path.join(USER_DATA_DIR, "oscorp_settings.ini")
+SETTINGS_SECTION = "settings"
+AUTH_SECTION = "auth"
+PASSWORD_ITERATIONS = 120_000
 
 DEFAULT_SETTINGS = {
     "theme": "default",
@@ -33,22 +41,44 @@ DEFAULT_CATEGORIES = {
 
 DEFAULT_THEME = {
     "default": {
-        "bg": [0.85, 0.4, 0.4, 1],
-        "card_bg": [1, 1, 1, 1],
-        "card_bg_p": [0.95, 0.95, 0.95, 1],
-        "text": [0, 0, 0, 1],
+        "bg": [0.18, 0.42, 0.43, 1],
+        "card_bg": [0.97, 0.98, 0.96, 1],
+        "card_bg_p": [0.91, 0.94, 0.91, 1],
+        "text": [0.09, 0.12, 0.13, 1],
+        "muted_text": [0.40, 0.45, 0.45, 1],
         "header_text": [1, 1, 1, 1],
-        "chart_bg": [1, 1, 1, 1],
-        "icon_tint": [0.25, 0.25, 0.25, 1],
+        "chart_bg": [0.98, 0.99, 0.97, 1],
+        "chart_text": [0.13, 0.16, 0.16, 1],
+        "chart_axis": [0.55, 0.61, 0.60, 1],
+        "chart_grid": [0.84, 0.88, 0.86, 1],
+        "field_bg": [1, 1, 1, 1],
+        "field_text": [0.09, 0.12, 0.13, 1],
+        "field_hint": [0.50, 0.55, 0.55, 1],
+        "icon_tint": [1, 1, 1, 1],
+        "button": [0.16, 0.36, 0.38, 1],
+        "success": [0.18, 0.55, 0.38, 1],
+        "danger": [0.72, 0.20, 0.22, 1],
+        "warning": [0.88, 0.58, 0.14, 1],
     },
     "dark": {
-        "bg": [0.12, 0.12, 0.15, 1],
-        "card_bg": [0.2, 0.2, 0.25, 1],
-        "card_bg_p": [0.28, 0.28, 0.33, 1],
-        "text": [0.9, 0.9, 0.9, 1],
-        "header_text": [0.9, 0.9, 0.9, 1],
-        "chart_bg": [0.18, 0.18, 0.22, 1],
+        "bg": [0.08, 0.10, 0.12, 1],
+        "card_bg": [0.14, 0.17, 0.19, 1],
+        "card_bg_p": [0.19, 0.23, 0.26, 1],
+        "text": [0.94, 0.96, 0.94, 1],
+        "muted_text": [0.68, 0.73, 0.72, 1],
+        "header_text": [0.98, 0.99, 0.97, 1],
+        "chart_bg": [0.10, 0.13, 0.15, 1],
+        "chart_text": [0.96, 0.98, 0.95, 1],
+        "chart_axis": [0.62, 0.70, 0.69, 1],
+        "chart_grid": [0.25, 0.31, 0.34, 1],
+        "field_bg": [0.09, 0.12, 0.14, 1],
+        "field_text": [0.96, 0.98, 0.95, 1],
+        "field_hint": [0.62, 0.68, 0.67, 1],
         "icon_tint": [1, 1, 1, 1],
+        "button": [0.20, 0.48, 0.50, 1],
+        "success": [0.22, 0.63, 0.43, 1],
+        "danger": [0.78, 0.24, 0.25, 1],
+        "warning": [0.95, 0.66, 0.18, 1],
     },
 }
 
@@ -99,11 +129,6 @@ def _ensure_schema(conn):
             due_date TEXT NOT NULL,
             created_at TEXT NOT NULL
         );
-
-        CREATE TABLE IF NOT EXISTS settings (
-            key TEXT PRIMARY KEY,
-            value TEXT NOT NULL
-        );
         """
     )
 
@@ -128,12 +153,6 @@ def _ensure_schema(conn):
             VALUES (?, ?, 0, 0, 0)
             """,
             (letter, name),
-        )
-
-    for key, value in DEFAULT_SETTINGS.items():
-        conn.execute(
-            "INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)",
-            (key, json.dumps(value)),
         )
 
     conn.commit()
@@ -187,6 +206,155 @@ def _remove_legacy_file(path):
             os.remove(path)
     except OSError:
         pass
+
+
+def _read_settings_ini():
+    parser = configparser.ConfigParser()
+    if os.path.exists(SETTINGS_FILE):
+        parser.read(SETTINGS_FILE, encoding="utf-8")
+    return parser
+
+
+def _write_settings_ini(parser):
+    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+        parser.write(f)
+
+
+def _normalise_settings(settings=None):
+    merged = dict(DEFAULT_SETTINGS)
+    if settings:
+        for key, value in settings.items():
+            if key in DEFAULT_SETTINGS:
+                merged[key] = str(value)
+    if merged["theme"] not in DEFAULT_THEME:
+        merged["theme"] = DEFAULT_SETTINGS["theme"]
+    return merged
+
+
+def _load_legacy_json_settings():
+    if not os.path.exists(LEGACY_SETTINGS_FILE):
+        return {}
+    try:
+        with open(LEGACY_SETTINGS_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _load_sqlite_settings():
+    try:
+        with _connect() as conn:
+            _ensure_schema(conn)
+            exists = conn.execute(
+                """
+                SELECT 1
+                FROM sqlite_master
+                WHERE type = 'table' AND name = 'settings'
+                """
+            ).fetchone()
+            if not exists:
+                return {}
+            rows = conn.execute("SELECT key, value FROM settings").fetchall()
+    except sqlite3.Error:
+        return {}
+
+    settings = {}
+    for row in rows:
+        try:
+            settings[row["key"]] = json.loads(row["value"])
+        except json.JSONDecodeError:
+            settings[row["key"]] = row["value"]
+    return settings
+
+
+def save_settings(settings):
+    parser = _read_settings_ini()
+    if not parser.has_section(SETTINGS_SECTION):
+        parser.add_section(SETTINGS_SECTION)
+
+    for key, value in _normalise_settings(settings).items():
+        parser.set(SETTINGS_SECTION, key, str(value))
+
+    _write_settings_ini(parser)
+    _remove_legacy_file(LEGACY_SETTINGS_FILE)
+
+
+def load_settings():
+    parser = _read_settings_ini()
+    if parser.has_section(SETTINGS_SECTION):
+        return _normalise_settings(dict(parser.items(SETTINGS_SECTION)))
+
+    settings = _normalise_settings(
+        _load_legacy_json_settings() or _load_sqlite_settings()
+    )
+    save_settings(settings)
+    return settings
+
+
+def reset_settings():
+    save_settings(DEFAULT_SETTINGS)
+    return dict(DEFAULT_SETTINGS)
+
+
+def login_account_exists():
+    parser = _read_settings_ini()
+    if not parser.has_section(AUTH_SECTION):
+        return False
+    username = parser.get(AUTH_SECTION, "username", fallback="").strip()
+    salt = parser.get(AUTH_SECTION, "password_salt", fallback="")
+    stored_hash = parser.get(AUTH_SECTION, "password_hash", fallback="")
+    return bool(username and salt and stored_hash)
+
+
+def get_login_username():
+    parser = _read_settings_ini()
+    if not parser.has_section(AUTH_SECTION):
+        return ""
+    return parser.get(AUTH_SECTION, "username", fallback="").strip()
+
+
+def _password_hash(password, salt):
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        bytes.fromhex(salt),
+        PASSWORD_ITERATIONS,
+    ).hex()
+
+
+def save_login_credentials(username, password):
+    username = username.strip()
+    if not username:
+        return False, "Enter a username."
+    if len(password) < 4:
+        return False, "Password must be at least 4 characters."
+
+    parser = _read_settings_ini()
+    if not parser.has_section(AUTH_SECTION):
+        parser.add_section(AUTH_SECTION)
+
+    salt = secrets.token_hex(16)
+    parser.set(AUTH_SECTION, "username", username)
+    parser.set(AUTH_SECTION, "password_salt", salt)
+    parser.set(AUTH_SECTION, "password_hash", _password_hash(password, salt))
+    _write_settings_ini(parser)
+    return True, "Account created."
+
+
+def authenticate_login(username, password):
+    parser = _read_settings_ini()
+    if not parser.has_section(AUTH_SECTION):
+        return False
+
+    stored_username = parser.get(AUTH_SECTION, "username", fallback="")
+    salt = parser.get(AUTH_SECTION, "password_salt", fallback="")
+    stored_hash = parser.get(AUTH_SECTION, "password_hash", fallback="")
+    if not stored_username or not salt or not stored_hash:
+        return False
+    if username.strip() != stored_username:
+        return False
+
+    return hmac.compare_digest(_password_hash(password, salt), stored_hash)
 
 
 def _migrate_json_data(conn):
@@ -279,22 +447,13 @@ def _migrate_json_data(conn):
             (label, float(amount), _parse_datetime(date_value).isoformat(), now),
         )
 
-    if os.path.exists(SETTINGS_FILE):
-        with open(SETTINGS_FILE, encoding="utf-8") as f:
-            settings = json.load(f)
-        for key, value in {**DEFAULT_SETTINGS, **settings}.items():
-            conn.execute(
-                """
-                INSERT INTO settings (key, value)
-                VALUES (?, ?)
-                ON CONFLICT(key) DO UPDATE SET value = excluded.value
-                """,
-                (key, json.dumps(value)),
-            )
+    settings = _load_legacy_json_settings()
+    if settings:
+        save_settings(settings)
 
     conn.commit()
     _remove_legacy_file(DATA_FILE)
-    _remove_legacy_file(SETTINGS_FILE)
+    _remove_legacy_file(LEGACY_SETTINGS_FILE)
 
 
 def save_data(bud):
@@ -485,49 +644,6 @@ def reset_data(bud):
             )
         conn.commit()
     _remove_legacy_file(DATA_FILE)
-
-
-def save_settings(settings):
-    with _connect() as conn:
-        _ensure_schema(conn)
-        for key, value in {**DEFAULT_SETTINGS, **settings}.items():
-            conn.execute(
-                """
-                INSERT INTO settings (key, value)
-                VALUES (?, ?)
-                ON CONFLICT(key) DO UPDATE SET value = excluded.value
-                """,
-                (key, json.dumps(value)),
-            )
-        conn.commit()
-    _remove_legacy_file(SETTINGS_FILE)
-
-
-def load_settings():
-    with _connect() as conn:
-        _ensure_schema(conn)
-        rows = conn.execute("SELECT key, value FROM settings").fetchall()
-    settings = dict(DEFAULT_SETTINGS)
-    for row in rows:
-        try:
-            settings[row["key"]] = json.loads(row["value"])
-        except json.JSONDecodeError:
-            settings[row["key"]] = row["value"]
-    return settings
-
-
-def reset_settings():
-    with _connect() as conn:
-        _ensure_schema(conn)
-        conn.execute("DELETE FROM settings")
-        for key, value in DEFAULT_SETTINGS.items():
-            conn.execute(
-                "INSERT INTO settings (key, value) VALUES (?, ?)",
-                (key, json.dumps(value)),
-            )
-        conn.commit()
-    _remove_legacy_file(SETTINGS_FILE)
-    return dict(DEFAULT_SETTINGS)
 
 
 def get_theme_colors(theme_name):

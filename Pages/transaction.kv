@@ -21,7 +21,7 @@
                 size_hint_x: None
                 width: dp(46)
                 background_normal: "Assets/back_arrow.png"
-                background_down:   "Assets/back_arrow.png"
+                background_down: "Assets/back_arrow.png"
                 background_color: root.icon_tint
                 on_press: root.cancel()
 
@@ -29,14 +29,14 @@
                 text: "New Transaction"
                 bold: True
                 font_size: "20sp"
-                color: (1, 1, 1, 1)
+                color: root.header_color
                 halign: "center"
                 valign: "middle"
                 text_size: self.size
 
             Widget:
                 size_hint_x: None
-                width: dp(46)  
+                width: dp(46)
 
         ScrollView:
             GridLayout:
@@ -64,7 +64,7 @@
                         text: "Date & Time"
                         font_size: "12sp"
                         bold: True
-                        color: (0.55, 0.55, 0.55, 1)
+                        color: root.muted_color
                         halign: "left"
                         valign: "middle"
                         text_size: self.size
@@ -98,7 +98,7 @@
                         text: "Category"
                         font_size: "12sp"
                         bold: True
-                        color: (0.55, 0.55, 0.55, 1)
+                        color: root.muted_color
                         halign: "left"
                         valign: "middle"
                         text_size: self.size
@@ -109,6 +109,10 @@
                         id: category_spinner
                         text: "Household"
                         values: ["Household", "Credit", "Travel", "Medical", "Shopping", "Fun", "Misc"]
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.field_bg
+                        color: root.field_text
                         on_text: root.on_category_select(self.text)
 
                 BoxLayout:
@@ -129,7 +133,7 @@
                         text: "Amount"
                         font_size: "12sp"
                         bold: True
-                        color: (0.55, 0.55, 0.55, 1)
+                        color: root.muted_color
                         halign: "left"
                         valign: "middle"
                         text_size: self.size
@@ -142,6 +146,12 @@
                         input_filter: "float"
                         multiline: False
                         font_size: "16sp"
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
 
                 BoxLayout:
                     orientation: "vertical"
@@ -161,7 +171,7 @@
                         text: "Description"
                         font_size: "12sp"
                         bold: True
-                        color: (0.55, 0.55, 0.55, 1)
+                        color: root.muted_color
                         halign: "left"
                         valign: "middle"
                         text_size: self.size
@@ -172,6 +182,12 @@
                         id: desc
                         hint_text: "What was this for?"
                         multiline: False
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
 
                 BoxLayout:
                     orientation: "vertical"
@@ -188,10 +204,10 @@
                             radius: [dp(8)]
 
                     Label:
-                        text: "Comments  (optional)"
+                        text: "Comments (optional)"
                         font_size: "12sp"
                         bold: True
-                        color: (0.55, 0.55, 0.55, 1)
+                        color: root.muted_color
                         halign: "left"
                         valign: "middle"
                         text_size: self.size
@@ -200,7 +216,13 @@
 
                     TextInput:
                         id: comments
-                        hint_text: "Any additional details..."
+                        hint_text: "Any additional details"
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
 
                 Label:
                     id: status_label
@@ -209,7 +231,7 @@
                     height: dp(36)
                     font_size: "13sp"
                     bold: True
-                    color: (1, 0.75, 0.4, 1)
+                    color: root.danger_color
                     halign: "left"
                     valign: "middle"
                     text_size: self.size
@@ -233,7 +255,10 @@
                         text: "Submit Transaction"
                         font_size: "15sp"
                         bold: True
-                        background_color: (0.2, 0.6, 0.3, 1)
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.success_color
+                        color: (1, 1, 1, 1)
                         size_hint_y: None
                         height: dp(42)
                         on_press:
@@ -242,7 +267,10 @@
                     Button:
                         text: "Remove a Past Transaction"
                         font_size: "13sp"
-                        background_color: (0.6, 0.18, 0.18, 1)
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.danger_color
+                        color: (1, 1, 1, 1)
                         size_hint_y: None
                         height: dp(36)
                         on_press: root.open_remove_popup()

@@ -8,6 +8,13 @@ class SpentScreen(Screen):
     card_color = ListProperty([1, 1, 1, 1])
     text_color = ListProperty([0, 0, 0, 1])
     icon_tint  = ListProperty([1, 1, 1, 1])  
+    header_color = ListProperty([1, 1, 1, 1])
+    muted_color = ListProperty([0.40, 0.45, 0.45, 1])
+    field_bg = ListProperty([1, 1, 1, 1])
+    field_text = ListProperty([0.09, 0.12, 0.13, 1])
+    field_hint = ListProperty([0.50, 0.55, 0.55, 1])
+    success_color = ListProperty([0.18, 0.55, 0.38, 1])
+    danger_color = ListProperty([0.72, 0.20, 0.22, 1])
     search_text = StringProperty("")
 
     CAT_COLORS = {
@@ -130,7 +137,7 @@ class SpentScreen(Screen):
             msg = "No transactions match your search." if query else "No transactions yet."
             container.add_widget(Label(
                 text=msg,
-                color=(1, 1, 1, 0.7),
+                color=self.muted_color,
                 font_size="15sp",
                 size_hint_y=None,
                 height=dp(50),
@@ -193,7 +200,7 @@ class SpentScreen(Screen):
             date_lbl = Label(
                 text=str(date.date()),
                 font_size="12sp",
-                color=(0.55, 0.55, 0.55, 1),
+                color=self.muted_color,
                 size_hint_y=None, height=dp(16),
                 halign="left", valign="middle",
             )
@@ -204,7 +211,7 @@ class SpentScreen(Screen):
                 desc_lbl = Label(
                     text=str(desc),
                     font_size="12sp",
-                    color=(0.55, 0.55, 0.55, 1),
+                    color=self.muted_color,
                     size_hint_y=None, height=dp(16),
                     halign="left", valign="middle",
                 )
@@ -218,8 +225,14 @@ class SpentScreen(Screen):
         self.bg_color   = colors["bg"]
         self.card_color = colors["card_bg"]
         self.text_color = colors["text"]
-        # Invert icon tint in dark mode
         self.icon_tint  = colors.get("icon_tint", [1, 1, 1, 1])
+        self.header_color = colors.get("header_text", [1, 1, 1, 1])
+        self.muted_color = colors.get("muted_text", [0.40, 0.45, 0.45, 1])
+        self.field_bg = colors.get("field_bg", [1, 1, 1, 1])
+        self.field_text = colors.get("field_text", colors["text"])
+        self.field_hint = colors.get("field_hint", [0.5, 0.5, 0.5, 1])
+        self.success_color = colors.get("success", [0.18, 0.55, 0.38, 1])
+        self.danger_color = colors.get("danger", [0.72, 0.20, 0.22, 1])
         if hasattr(self, "ids") and "transaction_list" in self.ids:
             query = self.ids.search_input.text.strip().lower() if "search_input" in self.ids else ""
             self._build_cards(query)

@@ -21,7 +21,7 @@
                 size_hint_x: None
                 width: dp(46)
                 background_normal: "Assets/back_arrow.png"
-                background_down:   "Assets/back_arrow.png"
+                background_down: "Assets/back_arrow.png"
                 background_color: root.icon_tint
                 on_press: root.go_back()
 
@@ -29,7 +29,7 @@
                 text: "Transaction History"
                 bold: True
                 font_size: "20sp"
-                color: (1, 1, 1, 1)
+                color: root.header_color
                 halign: "center"
                 valign: "middle"
                 text_size: self.size
@@ -42,28 +42,35 @@
             size_hint_y: None
             height: dp(42)
             spacing: dp(8)
+            padding: (dp(8), 0)
             canvas.before:
                 Color:
-                    rgba: (1, 1, 1, 0.15)
+                    rgba: root.card_color
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
                     radius: [dp(8)]
 
             Label:
-                text: "🔍"
+                text: "Search"
                 size_hint_x: None
-                width: dp(36)
-                font_size: "18sp"
+                width: dp(62)
+                font_size: "13sp"
+                color: root.muted_color
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
 
             TextInput:
                 id: search_input
-                hint_text: "Search by category, description, date, or amount..."
+                hint_text: "Category, description, date, or amount"
                 multiline: False
-                background_color: (0, 0, 0, 0)
-                foreground_color: (1, 1, 1, 1)
-                hint_text_color: (1, 1, 1, 0.5)
-                cursor_color: (1, 1, 1, 1)
+                background_normal: ""
+                background_active: ""
+                background_color: root.field_bg
+                foreground_color: root.field_text
+                hint_text_color: root.field_hint
+                cursor_color: root.field_text
                 font_size: "14sp"
                 on_text: root.on_search(self.text)
 
@@ -76,14 +83,20 @@
                 text: "+ Add Transaction"
                 bold: True
                 font_size: "13sp"
-                background_color: (0.2, 0.6, 0.3, 1)
+                background_normal: ""
+                background_down: ""
+                background_color: root.success_color
+                color: (1, 1, 1, 1)
                 on_press: root.go_add_transaction()
 
             Button:
-                text: "− Remove Transaction"
+                text: "- Remove Transaction"
                 bold: True
                 font_size: "13sp"
-                background_color: (0.6, 0.18, 0.18, 1)
+                background_normal: ""
+                background_down: ""
+                background_color: root.danger_color
+                color: (1, 1, 1, 1)
                 on_press: root.open_remove_popup()
 
         ScrollView:

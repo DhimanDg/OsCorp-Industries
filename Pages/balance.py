@@ -8,6 +8,9 @@ class BalanceScreen(Screen):
     card_color = ListProperty([1, 1, 1, 1])
     text_color = ListProperty([0, 0, 0, 1])
     icon_tint  = ListProperty([1, 1, 1, 1])
+    header_color = ListProperty([1, 1, 1, 1])
+    muted_color = ListProperty([0.40, 0.45, 0.45, 1])
+    track_color = ListProperty([0.91, 0.94, 0.91, 1])
 
     CATEGORIES  = ["Household", "Credit", "Travel", "Medical", "Shopping", "Fun", "Misc"]
     CAT_LETTERS = ["U",         "C",      "T",      "M",       "S",        "F",   "X"  ]
@@ -102,7 +105,7 @@ class BalanceScreen(Screen):
         top = BoxLayout(size_hint_y=None, height=dp(22))
 
         name_lbl = Label(
-            text=label_text + ("  [size=11sp][color=aaaaaa]tap to edit[/color][/size]"
+            text=label_text + ("  [size=11sp](tap to edit)[/size]"
                                if cat_key else ""),
             markup=True,
             bold=True,
@@ -138,7 +141,7 @@ class BalanceScreen(Screen):
             ww, hh = w.size
             x, y   = w.pos
             with w.canvas:
-                Color(0.82, 0.82, 0.82, 1)
+                Color(*self.track_color)
                 RoundedRectangle(pos=(x, y), size=(ww, hh), radius=[dp(4)])
                 fill_w = ww * pct if has_limit else 0
                 fill_c = (0.85, 0.25, 0.25, 1) if over else (*bar_rgb, 1)
@@ -156,7 +159,7 @@ class BalanceScreen(Screen):
                 font_size="11sp",
                 halign="right",
                 valign="middle",
-                color=(0.85, 0.25, 0.25, 1) if over else (0.5, 0.5, 0.5, 1),
+                color=(0.85, 0.25, 0.25, 1) if over else self.muted_color,
                 size_hint_y=None,
                 height=dp(14),
             )
@@ -220,6 +223,9 @@ class BalanceScreen(Screen):
         self.card_color = colors["card_bg"]
         self.text_color = colors["text"]
         self.icon_tint  = colors.get("icon_tint", [1, 1, 1, 1])
+        self.header_color = colors.get("header_text", [1, 1, 1, 1])
+        self.muted_color = colors.get("muted_text", [0.40, 0.45, 0.45, 1])
+        self.track_color = colors.get("card_bg_p", [0.91, 0.94, 0.91, 1])
         if hasattr(self, "ids") and "balance_list" in self.ids:
             self._build_rows()
 
