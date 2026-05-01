@@ -3,8 +3,6 @@
 <BillsScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: dp(15)
-        spacing: dp(12)
         canvas.before:
             Color:
                 rgba: root.bg_color
@@ -12,14 +10,17 @@
                 pos: self.pos
                 size: self.size
 
+        # ── Header ───────────────────────────────────────────────────────
         BoxLayout:
             size_hint_y: None
-            height: dp(50)
-            spacing: dp(10)
+            height: dp(56)
+            padding: (dp(8), dp(8), dp(8), dp(4))
+            spacing: dp(8)
 
             Button:
-                size_hint_x: None
-                width: dp(46)
+                size_hint: (None, None)
+                size: (dp(40), dp(40))
+                pos_hint: {"center_y": 0.5}
                 background_normal: "Assets/back_arrow.png"
                 background_down: "Assets/back_arrow.png"
                 background_color: root.icon_tint
@@ -35,8 +36,9 @@
                 text_size: self.size
 
             Button:
-                size_hint_x: None
-                width: dp(86)
+                size_hint: (None, None)
+                size: (dp(90), dp(36))
+                pos_hint: {"center_y": 0.5}
                 text: "+ Add Bill"
                 font_size: "13sp"
                 bold: True
@@ -46,14 +48,14 @@
                 color: (1, 1, 1, 1)
                 on_press: root.open_add_popup()
 
+        # ── Status legend row ────────────────────────────────────────────
         BoxLayout:
             size_hint_y: None
-            height: dp(34)
+            height: dp(38)
             spacing: dp(8)
-            padding: (dp(4), dp(2))
+            padding: (dp(12), dp(4), dp(12), dp(0))
 
             BoxLayout:
-                size_hint_x: 1
                 padding: dp(6)
                 canvas.before:
                     Color:
@@ -61,7 +63,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(6)]
+                        radius: [dp(8)]
                 Label:
                     text: "Overdue"
                     font_size: "11sp"
@@ -72,7 +74,6 @@
                     text_size: self.size
 
             BoxLayout:
-                size_hint_x: 1
                 padding: dp(6)
                 canvas.before:
                     Color:
@@ -80,9 +81,9 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(6)]
+                        radius: [dp(8)]
                 Label:
-                    text: "Due <= 7 days"
+                    text: "Due \u2264 7 days"
                     font_size: "11sp"
                     bold: True
                     color: root.warning_color
@@ -91,7 +92,6 @@
                     text_size: self.size
 
             BoxLayout:
-                size_hint_x: 1
                 padding: dp(6)
                 canvas.before:
                     Color:
@@ -99,7 +99,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(6)]
+                        radius: [dp(8)]
                 Label:
                     text: "Coming up"
                     font_size: "11sp"
@@ -109,6 +109,7 @@
                     valign: "middle"
                     text_size: self.size
 
+        # ── Scrollable bill cards ────────────────────────────────────────
         ScrollView:
             GridLayout:
                 id: bill_list
@@ -116,4 +117,4 @@
                 spacing: dp(10)
                 size_hint_y: None
                 height: self.minimum_height
-                padding: dp(4)
+                padding: (dp(12), dp(6), dp(12), dp(20))

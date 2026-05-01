@@ -3,8 +3,6 @@
 <LoginScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: dp(26)
-        spacing: dp(16)
         canvas.before:
             Color:
                 rgba: root.bg_color
@@ -12,16 +10,17 @@
                 pos: self.pos
                 size: self.size
 
+        # Top hero area
         BoxLayout:
             orientation: "vertical"
-            size_hint_y: None
-            height: dp(90)
-            spacing: dp(4)
+            size_hint_y: 0.35
+            padding: (dp(24), dp(40), dp(24), dp(20))
+            spacing: dp(6)
 
             Label:
-                text: "OsCorp Industries"
+                text: "OsCorp"
                 bold: True
-                font_size: "26sp"
+                font_size: "32sp"
                 color: root.header_color
                 halign: "center"
                 valign: "bottom"
@@ -29,106 +28,110 @@
 
             Label:
                 text: "Budget Manager"
-                font_size: "14sp"
+                font_size: "15sp"
                 color: root.header_color
                 halign: "center"
                 valign: "top"
                 text_size: self.size
 
-        Widget:
-
+        # Card area
         BoxLayout:
             orientation: "vertical"
-            size_hint: (0.62, None)
-            height: dp(330)
-            pos_hint: {"center_x": 0.5}
-            padding: dp(18)
-            spacing: dp(12)
-            canvas.before:
-                Color:
-                    rgba: root.card_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(8)]
+            size_hint_y: 0.65
+            padding: (dp(20), dp(0), dp(20), dp(30))
+            spacing: dp(0)
 
-            Label:
-                text: root.title_text
-                bold: True
-                font_size: "20sp"
-                color: root.text_color
-                size_hint_y: None
-                height: dp(28)
-                halign: "center"
-                valign: "middle"
-                text_size: self.size
+            BoxLayout:
+                orientation: "vertical"
+                padding: (dp(24), dp(28), dp(24), dp(28))
+                spacing: dp(14)
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(16), dp(16), dp(16), dp(16)]
 
-            Label:
-                text: root.subtitle_text
-                font_size: "13sp"
-                color: root.muted_color
-                size_hint_y: None
-                height: dp(22)
-                halign: "center"
-                valign: "middle"
-                text_size: self.size
+                Label:
+                    text: root.title_text
+                    bold: True
+                    font_size: "22sp"
+                    color: root.text_color
+                    size_hint_y: None
+                    height: dp(32)
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
 
-            TextInput:
-                id: username
-                hint_text: "Username"
-                multiline: False
-                font_size: "15sp"
-                size_hint_y: None
-                height: dp(44)
-                padding: [dp(12), dp(11), dp(12), dp(10)]
-                background_normal: ""
-                background_active: ""
-                background_color: root.field_bg
-                foreground_color: root.field_text
-                hint_text_color: root.field_hint
-                cursor_color: root.field_text
-                write_tab: False
-                on_text_validate: password.focus = True
+                Label:
+                    text: root.subtitle_text
+                    font_size: "13sp"
+                    color: root.muted_color
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
 
-            TextInput:
-                id: password
-                hint_text: "Password"
-                password: True
-                multiline: False
-                font_size: "15sp"
-                size_hint_y: None
-                height: dp(44)
-                padding: [dp(12), dp(11), dp(12), dp(10)]
-                background_normal: ""
-                background_active: ""
-                background_color: root.field_bg
-                foreground_color: root.field_text
-                hint_text_color: root.field_hint
-                cursor_color: root.field_text
-                write_tab: False
-                on_text_validate: root.submit()
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
 
-            Label:
-                text: root.status_text
-                font_size: "12sp"
-                bold: True
-                color: root.success_color if root.status_text == "Account created." else root.danger_color
-                size_hint_y: None
-                height: dp(26)
-                halign: "center"
-                valign: "middle"
-                text_size: self.size
+                TextInput:
+                    id: username
+                    hint_text: "Username"
+                    multiline: False
+                    font_size: "15sp"
+                    size_hint_y: None
+                    height: dp(48)
+                    padding: [dp(14), dp(13), dp(14), dp(12)]
+                    background_normal: ""
+                    background_active: ""
+                    background_color: root.field_bg
+                    foreground_color: root.field_text
+                    hint_text_color: root.field_hint
+                    cursor_color: root.field_text
+                    write_tab: False
+                    on_text_validate: password.focus = True
 
-            Button:
-                text: root.action_text
-                bold: True
-                font_size: "15sp"
-                size_hint_y: None
-                height: dp(44)
-                background_normal: ""
-                background_down: ""
-                background_color: root.button_color
-                color: (1, 1, 1, 1)
-                on_press: root.submit()
+                TextInput:
+                    id: password
+                    hint_text: "Password"
+                    password: True
+                    multiline: False
+                    font_size: "15sp"
+                    size_hint_y: None
+                    height: dp(48)
+                    padding: [dp(14), dp(13), dp(14), dp(12)]
+                    background_normal: ""
+                    background_active: ""
+                    background_color: root.field_bg
+                    foreground_color: root.field_text
+                    hint_text_color: root.field_hint
+                    cursor_color: root.field_text
+                    write_tab: False
+                    on_text_validate: root.submit()
 
-        Widget:
+                Label:
+                    text: root.status_text
+                    font_size: "12sp"
+                    bold: True
+                    color: root.success_color if root.status_text == "Account created." else root.danger_color
+                    size_hint_y: None
+                    height: dp(22)
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+                Button:
+                    text: root.action_text
+                    bold: True
+                    font_size: "16sp"
+                    size_hint_y: None
+                    height: dp(50)
+                    background_normal: ""
+                    background_down: ""
+                    background_color: root.button_color
+                    color: (1, 1, 1, 1)
+                    on_press: root.submit()

@@ -3,8 +3,6 @@
 <BalanceScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: dp(15)
-        spacing: dp(12)
         canvas.before:
             Color:
                 rgba: root.bg_color
@@ -12,14 +10,17 @@
                 pos: self.pos
                 size: self.size
 
+        # ── Header ───────────────────────────────────────────────────────
         BoxLayout:
             size_hint_y: None
-            height: dp(50)
-            spacing: dp(10)
+            height: dp(56)
+            padding: (dp(8), dp(8), dp(16), dp(4))
+            spacing: dp(8)
 
             Button:
-                size_hint_x: None
-                width: dp(46)
+                size_hint: (None, None)
+                size: (dp(40), dp(40))
+                pos_hint: {"center_y": 0.5}
                 background_normal: "Assets/back_arrow.png"
                 background_down:   "Assets/back_arrow.png"
                 background_color: root.icon_tint
@@ -36,8 +37,9 @@
 
             Widget:
                 size_hint_x: None
-                width: dp(46) 
+                width: dp(40)
 
+        # ── Scrollable balance rows ──────────────────────────────────────
         ScrollView:
             GridLayout:
                 id: balance_list
@@ -45,4 +47,4 @@
                 spacing: dp(10)
                 size_hint_y: None
                 height: self.minimum_height
-                padding: dp(4)
+                padding: (dp(12), dp(6), dp(12), dp(20))
