@@ -1,0 +1,280 @@
+#:import dp kivy.metrics.dp
+
+<TransactionScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ── Header ───────────────────────────────────────────────────────
+        BoxLayout:
+            size_hint_y: None
+            height: dp(56)
+            padding: (dp(8), dp(8), dp(8), dp(4))
+            spacing: dp(8)
+
+            Button:
+                size_hint: (None, None)
+                size: (dp(40), dp(40))
+                pos_hint: {"center_y": 0.5}
+                background_normal: "Assets/back_arrow.png"
+                background_down: "Assets/back_arrow.png"
+                background_color: root.icon_tint
+                on_press: root.cancel()
+
+            Label:
+                text: "New Transaction"
+                bold: True
+                font_size: "20sp"
+                color: root.header_color
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+                size_hint_x: None
+                width: dp(40)
+
+        # ── Scrollable form body ─────────────────────────────────────────
+        ScrollView:
+            GridLayout:
+                cols: 1
+                spacing: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+                padding: (dp(12), dp(6), dp(12), dp(20))
+
+                # Date & Time card
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(66)
+                    padding: (dp(14), dp(10))
+                    spacing: dp(4)
+                    canvas.before:
+                        Color:
+                            rgba: root.card_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(10)]
+
+                    Label:
+                        text: "DATE & TIME"
+                        font_size: "10sp"
+                        bold: True
+                        color: root.muted_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: dp(16)
+
+                    Label:
+                        text: root.current_datetime
+                        font_size: "14sp"
+                        bold: True
+                        color: root.text_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                # Category card
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(78)
+                    padding: (dp(14), dp(10))
+                    spacing: dp(6)
+                    canvas.before:
+                        Color:
+                            rgba: root.card_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(10)]
+
+                    Label:
+                        text: "CATEGORY"
+                        font_size: "10sp"
+                        bold: True
+                        color: root.muted_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: dp(16)
+
+                    Spinner:
+                        id: category_spinner
+                        text: "Household"
+                        values: ["Household", "Credit", "Travel", "Medical", "Shopping", "Fun", "Misc"]
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.field_bg
+                        color: root.field_text
+                        font_size: "15sp"
+                        on_text: root.on_category_select(self.text)
+
+                # Amount card
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(78)
+                    padding: (dp(14), dp(10))
+                    spacing: dp(6)
+                    canvas.before:
+                        Color:
+                            rgba: root.card_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(10)]
+
+                    Label:
+                        text: "AMOUNT"
+                        font_size: "10sp"
+                        bold: True
+                        color: root.muted_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: dp(16)
+
+                    TextInput:
+                        id: amt
+                        hint_text: "0.00"
+                        input_filter: "float"
+                        multiline: False
+                        font_size: "18sp"
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
+
+                # Description card
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(78)
+                    padding: (dp(14), dp(10))
+                    spacing: dp(6)
+                    canvas.before:
+                        Color:
+                            rgba: root.card_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(10)]
+
+                    Label:
+                        text: "DESCRIPTION"
+                        font_size: "10sp"
+                        bold: True
+                        color: root.muted_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: dp(16)
+
+                    TextInput:
+                        id: desc
+                        hint_text: "What was this for?"
+                        multiline: False
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
+
+                # Comments card
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(100)
+                    padding: (dp(14), dp(10))
+                    spacing: dp(6)
+                    canvas.before:
+                        Color:
+                            rgba: root.card_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(10)]
+
+                    Label:
+                        text: "COMMENTS (optional)"
+                        font_size: "10sp"
+                        bold: True
+                        color: root.muted_color
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: dp(16)
+
+                    TextInput:
+                        id: comments
+                        hint_text: "Any additional details"
+                        font_size: "14sp"
+                        background_normal: ""
+                        background_active: ""
+                        background_color: root.field_bg
+                        foreground_color: root.field_text
+                        hint_text_color: root.field_hint
+                        cursor_color: root.field_text
+
+                # Status label
+                Label:
+                    id: status_label
+                    text: ""
+                    size_hint_y: None
+                    height: dp(32)
+                    font_size: "13sp"
+                    bold: True
+                    color: root.danger_color
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+                    padding: (dp(4), 0)
+
+                # Action buttons
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(108)
+                    spacing: dp(10)
+
+                    Button:
+                        text: "Submit Transaction"
+                        font_size: "16sp"
+                        bold: True
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.success_color
+                        color: (1, 1, 1, 1)
+                        size_hint_y: None
+                        height: dp(50)
+                        on_press:
+                            root.submit_transaction(desc.text, amt.text, comments.text)
+
+                    Button:
+                        text: "Remove a Past Transaction"
+                        font_size: "14sp"
+                        background_normal: ""
+                        background_down: ""
+                        background_color: root.danger_color
+                        color: (1, 1, 1, 1)
+                        size_hint_y: None
+                        height: dp(42)
+                        on_press: root.open_remove_popup()
