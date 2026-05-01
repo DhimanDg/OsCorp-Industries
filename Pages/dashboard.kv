@@ -16,23 +16,36 @@
         BoxLayout:
             size_hint_y: None
             height: dp(50)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (1, None)
+                height: '60dp'
+                padding: (10, 0)
+                spacing: 10
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [45]
 
-            Label:
-                text: "OsCorp Industries"
-                bold: True
-                font_size: "20sp"
-                halign: "left"
-                valign: "middle"
-                text_size: self.size
-                color: (1, 1, 1, 1)
+                Label:
+                    text: "OsCorp Industries"
+                    bold: True
+                    font_size: "20sp"
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+                    color: root.text_color
 
-            Button:
-                size_hint_x: None
-                width: dp(46)
-                background_normal: "Assets/settings.png"
-                background_down:   "Assets/settings.png"
-                background_color: root.icon_tint
-                on_press: root.open_settings()
+                Button:
+                    size_hint_x: None
+                    width: dp(60)
+                    background_normal: "Assets/settings.png"
+                    background_down:   "Assets/settings.png"
+                    background_color: root.icon_tint
+                    on_press: root.open_settings()
 
         GridLayout:
             cols: 3
@@ -138,19 +151,40 @@
             size_hint_y: None
             height: dp(60)
             spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: root.card_color
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [40]
 
-            Button:
+            TabIcon:
                 text: "New Transaction"
+                icon: "Assets/Transaction.png"
+                text_color: root.text_color
+                icon_tint: root.icon_tint
                 on_press: root.add_transaction()
-            Button:
+            TabIcon:
+                icon: "Assets/Balance.png"
                 text: "Show Balance"
+                text_color: root.text_color
+                icon_tint: root.icon_tint
                 on_press: root.show_balance()
-            Button:
+            TabIcon:
+                icon: "Assets/Spent.png"
                 text: "Show Spent"
+                text_color: root.text_color
+                icon_tint: root.icon_tint
                 on_press: root.show_spent()
-            Button:
+            TabIcon:
+                icon: "Assets/Bills.png"
                 text: "Bills"
+                font_size: 25
+                text_color: root.text_color
+                icon_tint: root.icon_tint
                 on_press: root.show_bills()
+
 
 
 
@@ -194,3 +228,20 @@
         text: root.text
         font_size: "12sp"
         color: root.text_color
+
+<TabIcon@ButtonBehavior+BoxLayout>:
+    orientation: "vertical"
+    spacing: dp(5)
+    icon: ""
+    text: ""
+    text_color: (0, 0, 0, 1)
+    icon_tint: (0.25, 0.25, 0.25, 1)
+    Image:
+        source: root.icon
+        size_hint_y: 2.0
+        color: root.icon_tint
+    Label:
+        text: root.text
+        font_size: "12sp"
+        color: root.text_color
+
