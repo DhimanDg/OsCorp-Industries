@@ -26,19 +26,15 @@ class SpendingChart(Widget):
         self.bud = None
         self._chart_bg   = [1, 1, 1, 1]
         self._text_color = (0.15, 0.15, 0.15, 1)
-        self._axis_color = (0.55, 0.61, 0.60, 1)
-        self._grid_color = (0.84, 0.88, 0.86, 1)
         self.bind(pos=self._redraw, size=self._redraw)
 
     def refresh(self, bud):
         self.bud = bud
         self._redraw()
 
-    def set_theme(self, chart_bg, text_color, axis_color, grid_color):
+    def set_theme(self, chart_bg, text_color):
         self._chart_bg   = chart_bg
         self._text_color = text_color
-        self._axis_color = axis_color
-        self._grid_color = grid_color
         self._redraw()
 
     def _redraw(self, *args):
@@ -46,21 +42,32 @@ class SpendingChart(Widget):
             return
 
         from kivy.core.text import Label as CoreLabel
-        from kivy.graphics  import Color, Rectangle, Line
+        from kivy.graphics  import Color, Rectangle, Line, Fbo, ClearColor, ClearBuffers
 
         self.canvas.clear()
 
         values  = [self.bud.category_spent[k] for k in self.CAT_LETTERS]
-        max_val = max(values) if any(v > 0 for v in values) else 1
+        
+        # handles posive and negative spent values
+        max_val = max(values)
+        min_val = min(values)
+
+        if max_val == min_val:
+            max_val += 1
 
         w, h    = self.size
         x0, y0  = self.pos
-        pad_l, pad_r, pad_t, pad_b = 12, 12, 26, 34
+        pad_l, pad_r, pad_t, pad_b = 10, 10, 22, 34
         chart_w = w - pad_l - pad_r
         chart_h = h - pad_t - pad_b
         n       = len(self.CATEGORIES)
         bar_w   = (chart_w / n) * 0.58
         gap     = (chart_w / n) * 0.42
+
+        # computing zero baseline
+        value_range = max_val - min_val
+        zero_ratio = (0 - min_val) / value_range
+        zero_y = y0 + pad_b + zero_ratio * chart_h
 
         def draw_text(canvas, text, tx, ty, font_size, color):
             lbl = CoreLabel(text=text, font_size=font_size, color=color)
@@ -73,31 +80,35 @@ class SpendingChart(Widget):
                           size=tex.size)
 
         with self.canvas:
-            Color(*self._chart_bg)
+            # Background
             Rectangle(pos=(x0, y0), size=(w, h))
-
-            for ratio in (0.25, 0.50, 0.75, 1.0):
-                grid_y = y0 + pad_b + chart_h * ratio
-                Color(*self._grid_color)
-                Line(points=[x0 + pad_l, grid_y,
-                             x0 + w - pad_r, grid_y],
-                     width=0.8)
 
             for i, (cat, key, short) in enumerate(
                     zip(self.CATEGORIES, self.CAT_LETTERS, self.CAT_SHORT)):
                 spent = self.bud.category_spent[key]
-                bar_h = (spent / max_val) * chart_h if max_val > 0 else 0
+                bar_h = (abs(spent) / value_range) * chart_h
+
                 bar_x = x0 + pad_l + i * (bar_w + gap)
-                bar_y = y0 + pad_b
                 bar_cx = bar_x + bar_w / 2 
 
-                Color(*self.CATEGORY_COLORS[cat])
+                # position relative to zero
+                if spent >= 0:
+                    bar_y = zero_y
+                else:
+                    bar_y = zero_y - bar_h
+
+                # color tweak when spent is negative
+                if spent < 0:
+                    Color(0.7,0.3,0.3,1)
+                else:
+                    Color(*self.CATEGORY_COLORS[cat])
+
                 Rectangle(pos=(bar_x, bar_y), size=(bar_w, bar_h))
 
-                if spent > 0:
+                if spent != 0:
                     draw_text(self.canvas,
                               f"${spent:,.0f}",
-                              bar_cx, min(bar_y + bar_h + 4, y0 + h - 18),
+                              bar_cx, bar_y + bar_h + 2,
                               11, self._text_color)
 
                 draw_text(self.canvas,
@@ -105,9 +116,10 @@ class SpendingChart(Widget):
                           bar_cx, y0 + 4,
                           10, self._text_color)
 
-            Color(*self._axis_color)
-            Line(points=[x0 + pad_l, y0 + pad_b,
-                         x0 + w - pad_r, y0 + pad_b], width=1.2)
+            # Zero baseline
+            Color(0.5, 0.5, 0.5, 1)
+            Line(points=[x0 + pad_l, zero_y,
+                         x0 + w - pad_r, zero_y], width=1.2)
 
 
 
@@ -156,10 +168,7 @@ class DashboardScreen(Screen):
         self.button_color = colors.get("button", [0.16, 0.36, 0.38, 1])
         if hasattr(self, "ids") and "spending_chart" in self.ids:
             self.ids.spending_chart.set_theme(
-                colors["chart_bg"],
-                tuple(colors.get("chart_text", colors["text"])),
-                tuple(colors.get("chart_axis", [0.7, 0.7, 0.7, 1])),
-                tuple(colors.get("chart_grid", [0.82, 0.82, 0.82, 1])),
+                colors["chart_bg"], tuple(colors["text"])
             )
 
     def open_settings(self):
