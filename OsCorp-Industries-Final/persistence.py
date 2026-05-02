@@ -294,7 +294,15 @@ def load_settings():
 
 def reset_settings():
     save_settings(DEFAULT_SETTINGS)
+    reset_login_account()
     return dict(DEFAULT_SETTINGS)
+
+
+def reset_login_account():
+    parser = _read_settings_ini()
+    if parser.has_section(AUTH_SECTION):
+        parser.remove_section(AUTH_SECTION)
+        _write_settings_ini(parser)
 
 
 def login_account_exists():

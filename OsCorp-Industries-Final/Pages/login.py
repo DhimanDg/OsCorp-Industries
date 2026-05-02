@@ -88,6 +88,19 @@ class LoginScreen(Screen):
         else:
             self.submit()
 
+    def _apply_popup_background(self, layout):
+        from kivy.graphics import Color, Rectangle
+
+        with layout.canvas.before:
+            Color(*self.card_color)
+            bg = Rectangle(pos=layout.pos, size=layout.size)
+
+        def update_bg(instance, value):
+            bg.pos = instance.pos
+            bg.size = instance.size
+
+        layout.bind(pos=update_bg, size=update_bg)
+
     def show_security_setup_popup(self):
         from kivy.metrics import dp
         from kivy.uix.boxlayout import BoxLayout
@@ -98,6 +111,7 @@ class LoginScreen(Screen):
 
         username = get_login_username()
         layout = BoxLayout(orientation="vertical", padding=dp(12), spacing=dp(8))
+        self._apply_popup_background(layout)
         layout.add_widget(Label(
             text="Set your security answer before continuing.",
             color=self.text_color,
@@ -193,6 +207,7 @@ class LoginScreen(Screen):
         from kivy.uix.textinput import TextInput
 
         layout = BoxLayout(orientation="vertical", padding=dp(12), spacing=dp(8))
+        self._apply_popup_background(layout)
         layout.add_widget(Label(
             text="Answer your security question to reset your password.",
             color=self.text_color,

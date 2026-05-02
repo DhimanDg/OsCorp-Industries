@@ -78,6 +78,7 @@ class SettingsScreen(Screen):
         self.app_state.update(new_settings)
         self._broadcast_theme(new_settings["theme"])
         self.ids.theme_btn.text = "Switch to Dark Mode"
+        self.manager.current = "login"
 
     def go_back(self):
         self.manager.current = "dashboard"
