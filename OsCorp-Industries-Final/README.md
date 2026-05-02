@@ -47,9 +47,12 @@ The first launch opens a login screen. If no account exists yet, the login scree
 - The implementation follows an MVC-style layout: `bud_app_class.py` and `persistence.py` act as the model/data layer, `Pages/*.kv` files define the views, and `Pages/*.py` screen classes coordinate user actions as controllers.
 
 ## Setup
+(Optional venv Setup):
+Step1:py -3.11 -m venv .venv - Use 3.11 for Kivy compatibility
+Step2:.venv\Scripts\Activate.ps1- Most common in VS Code 
 
-Install Python, then install the app dependency:
-
+Install Python(3.11), then install the app dependency:
+#kivy does not support python version 3.14 or later at the moment so it is recommended to install python ver 3.11
 ```bash
 python -m pip install -r requirements.txt
 ```
