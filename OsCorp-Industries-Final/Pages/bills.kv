@@ -1,0 +1,120 @@
+#:import dp kivy.metrics.dp
+
+<BillsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: root.bg_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ── Header ───────────────────────────────────────────────────────
+        BoxLayout:
+            size_hint_y: None
+            height: dp(56)
+            padding: (dp(8), dp(8), dp(8), dp(4))
+            spacing: dp(8)
+
+            Button:
+                size_hint: (None, None)
+                size: (dp(40), dp(40))
+                pos_hint: {"center_y": 0.5}
+                background_normal: "Assets/back_arrow.png"
+                background_down: "Assets/back_arrow.png"
+                background_color: root.icon_tint
+                on_press: root.go_back()
+
+            Label:
+                text: "Bills & Reminders"
+                bold: True
+                font_size: "20sp"
+                color: root.header_color
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            Button:
+                size_hint: (None, None)
+                size: (dp(90), dp(36))
+                pos_hint: {"center_y": 0.5}
+                text: "+ Add Bill"
+                font_size: "13sp"
+                bold: True
+                background_normal: ""
+                background_down: ""
+                background_color: root.success_color
+                color: (1, 1, 1, 1)
+                on_press: root.open_add_popup()
+
+        # ── Status legend row ────────────────────────────────────────────
+        BoxLayout:
+            size_hint_y: None
+            height: dp(38)
+            spacing: dp(8)
+            padding: (dp(12), dp(4), dp(12), dp(0))
+
+            BoxLayout:
+                padding: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(8)]
+                Label:
+                    text: "Overdue"
+                    font_size: "11sp"
+                    bold: True
+                    color: root.danger_color
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+            BoxLayout:
+                padding: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(8)]
+                Label:
+                    text: "Due \u2264 7 days"
+                    font_size: "11sp"
+                    bold: True
+                    color: root.warning_color
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+            BoxLayout:
+                padding: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: root.card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(8)]
+                Label:
+                    text: "Coming up"
+                    font_size: "11sp"
+                    bold: True
+                    color: root.success_color
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+        # ── Scrollable bill cards ────────────────────────────────────────
+        ScrollView:
+            GridLayout:
+                id: bill_list
+                cols: 1
+                spacing: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+                padding: (dp(12), dp(6), dp(12), dp(20))
