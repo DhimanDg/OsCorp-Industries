@@ -50,10 +50,10 @@ The first launch opens a login screen. If no account exists yet, the login scree
 (Optional venv Setup):
 
 
-Step1:py -3.11 -m venv .venv - Use 3.11 for Kivy compatibility
+Step1: py -3.11 -m venv .venv - Use 3.11 for Kivy compatibility
 
 
-Step2:.venv\Scripts\Activate.ps1- Most common in VS Code 
+Step2:  .venv\Scripts\Activate.ps1 - Most common in VS Code 
 
 Install Python(3.11), then install the app dependency:
 #kivy does not support python version 3.14 or later at the moment so it is recommended to install python ver 3.11
