@@ -36,16 +36,15 @@
 
             Widget:
 
-            Button:
+            IconButton:
+                source: "Assets/settings.png"
                 size_hint: (None, None)
-                size: (dp(38), dp(38))
+                size: (dp(28), dp(28))
                 pos_hint: {"center_y": 0.5}
-                background_normal: "Assets/settings.png"
-                background_down:   "Assets/settings.png"
-                background_color: root.icon_tint
+                color: root.text_color
                 on_press: root.open_settings()
 
-        # ── Stat cards (3 stacked vertically) ───────────────────────────
+        # ── Stat cards ───────────────────────────────────────────
         BoxLayout:
             orientation: "vertical"
             size_hint_y: None
@@ -75,7 +74,7 @@
                 text_color: root.text_color
                 on_press: root.open_budget_popup()
 
-        # ── Spending chart — expands to fill available space ─────────────
+        # ── Spending chart ─────────────────────────────
         BoxLayout:
             orientation: "vertical"
             size_hint_y: 1
@@ -105,7 +104,7 @@
                 SpendingChart:
                     id: spending_chart
 
-        # ── Category icons — expands to fill available space ─────────────
+        # ── Category icons ─────────────────────────────
         BoxLayout:
             orientation: "vertical"
             size_hint_y: 0.85
@@ -129,30 +128,35 @@
                     text_color: root.text_color
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Household")
+
                 CategoryIcon:
                     text: "Credit"
                     icon: "Assets/credit.png"
                     text_color: root.text_color
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Credit")
+
                 CategoryIcon:
                     text: "Travel"
                     icon: "Assets/travel.png"
                     text_color: root.text_color
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Travel")
+
                 CategoryIcon:
                     text: "Medical"
                     icon: "Assets/medical.png"
                     text_color: root.text_color
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Medical")
+
                 CategoryIcon:
                     text: "Shopping"
                     icon: "Assets/shopping.png"
                     text_color: root.text_color
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Shopping")
+
                 CategoryIcon:
                     text: "Fun"
                     icon: "Assets/fun.png"
@@ -160,13 +164,14 @@
                     icon_tint: root.text_color
                     on_press: root.open_category_popup("Fun")
 
-        # ── Bottom action buttons ────────────────────────────────────────
+        # ── Bottom buttons ─────────────────────────────
         BoxLayout:
             orientation: "vertical"
             size_hint_y: None
             height: dp(100)
             padding: (dp(12), dp(0), dp(12), dp(16))
             spacing: dp(20)
+
             GridLayout:
                 cols: 4
                 spacing: dp(8)
@@ -182,54 +187,37 @@
                 TabIcon:
                     text: "New Transaction"
                     icon: "Assets/Transaction.png"
-                    font_size: "15sp"
-                    bold: True
-                    background_normal: ""
-                    background_down: ""
                     background_color: root.button_color
                     text_color: root.text_color
                     icon_tint: root.text_color
-                    color: (1, 1, 1, 1)
                     on_press: root.add_transaction()
 
                 TabIcon:
                     text: "Show Balance"
                     icon: "Assets/Balance.png"
-                    font_size: "15sp"
-                    background_normal: ""
-                    background_down: ""
                     background_color: root.button_color
                     text_color: root.text_color
                     icon_tint: root.text_color
-                    color: (1, 1, 1, 1)
                     on_press: root.show_balance()
 
                 TabIcon:
                     text: "Show Spent"
                     icon: "Assets/Spent.png"
-                    font_size: "15sp"
-                    background_normal: ""
-                    background_down: ""
                     background_color: root.button_color
                     text_color: root.text_color
                     icon_tint: root.text_color
-                    color: (1, 1, 1, 1)
                     on_press: root.show_spent()
 
                 TabIcon:
                     text: "Bills"
                     icon: "Assets/Bills.png"
-                    font_size: "15sp"
-                    background_normal: ""
-                    background_down: ""
                     background_color: root.button_color
                     text_color: root.text_color
                     icon_tint: root.text_color
-                    color: (1, 1, 1, 1)
                     on_press: root.show_bills()
 
 
-# ── Reusable widgets ─────────────────────────────────────────────────────────
+# ── Reusable widgets ─────────────────────────────────
 
 <StatCard@ButtonBehavior+BoxLayout>:
     orientation: "vertical"
@@ -238,9 +226,10 @@
     height: dp(58)
     title: ""
     value: ""
-    card_color:   (1, 1, 1, 1)
+    card_color: (1, 1, 1, 1)
     card_color_p: (0.95, 0.95, 0.95, 1)
-    text_color:   (0, 0, 0, 1)
+    text_color: (0, 0, 0, 1)
+
     canvas.before:
         Color:
             rgba: self.card_color_p if self.state == "down" else self.card_color
@@ -275,10 +264,12 @@
     text: ""
     text_color: (0, 0, 0, 1)
     icon_tint: (0.25, 0.25, 0.25, 1)
+
     Image:
         source: root.icon
         size_hint_y: 0.65
         color: root.icon_tint
+
     Label:
         text: root.text
         font_size: "12sp"
@@ -288,6 +279,7 @@
         valign: "top"
         text_size: self.size
 
+
 <TabIcon@ButtonBehavior+BoxLayout>:
     orientation: "vertical"
     spacing: dp(5)
@@ -295,11 +287,17 @@
     text: ""
     text_color: (0, 0, 0, 1)
     icon_tint: (0.25, 0.25, 0.25, 1)
+
     Image:
         source: root.icon
         size_hint_y: 2.0
         color: root.icon_tint
+
     Label:
         text: root.text
         font_size: "12sp"
         color: root.text_color
+
+<IconButton@ButtonBehavior+Image>:
+    size_hint: (None, None)
+    size: (dp(28), dp(28))
